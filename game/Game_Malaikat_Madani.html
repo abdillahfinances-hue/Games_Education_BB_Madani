@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Malaikat — Madani Bimbel</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+  :root {
+    --gold: #F5A623;
+    --gold-light: #FFF3D6;
+    --gold-dark: #C47D0E;
+    --navy: #1A2744;
+    --navy-mid: #243360;
+    --navy-light: #2E4080;
+    --green: #27AE60;
+    --green-light: #D5F5E3;
+    --red: #E74C3C;
+    --red-light: #FDECEA;
+    --white: #FFFFFF;
+    --gray: #F4F6FA;
+    --text: #1A2744;
+    --text-muted: #7B8AB8;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --shadow: 0 4px 24px rgba(26,39,68,0.13);
+    --shadow-sm: 0 2px 10px rgba(26,39,68,0.09);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(135deg, #1A2744 0%, #2E4080 50%, #1A2744 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+
+  .container {
+    background: var(--white);
+    border-radius: 24px;
+    width: 100%;
+    max-width: 520px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+
+  .header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+    padding: 24px 28px 20px;
+    text-align: center;
+    position: relative;
+  }
+  .header-badge {
+    display: inline-block;
+    background: rgba(245,166,35,0.18);
+    border: 1px solid rgba(245,166,35,0.4);
+    color: var(--gold);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+  }
+  .header h1 {
+    color: var(--white);
+    font-size: 22px;
+    font-weight: 900;
+    line-height: 1.2;
+  }
+  .header h1 span { color: var(--gold); }
+  .header-sub {
+    color: rgba(255,255,255,0.6);
+    font-size: 12px;
+    margin-top: 6px;
+    font-weight: 600;
+  }
+
+  .screen { display: none; padding: 28px; }
+  .screen.active { display: block; }
+
+  /* HOME */
+  .home-arabic {
+    text-align: center;
+    font-size: 28px;
+    color: var(--navy);
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+  .home-title {
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+    font-weight: 600;
+  }
+  .mode-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .mode-card {
+    background: var(--gray);
+    border: 2px solid transparent;
+    border-radius: var(--radius);
+    padding: 20px 14px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .mode-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .mode-card:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: var(--shadow); }
+  .mode-card:hover::before { opacity: 1; }
+  .mode-card .icon {
+    font-size: 32px;
+    display: block;
+    margin-bottom: 10px;
+    line-height: 1;
+  }
+  .mode-card .mc-name {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 4px;
+  }
+  .mode-card .mc-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  .mode-card .mc-badge {
+    display: inline-block;
+    background: var(--gold-light);
+    color: var(--gold-dark);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 8px;
+    margin-top: 6px;
+  }
+  .madani-tag {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 600;
+    padding-top: 8px;
+    border-top: 1px solid #EEF0F5;
+  }
+  .madani-tag strong { color: var(--navy); }
+
+  /* PROGRESS */
+  .prog-wrap {
+    margin-bottom: 20px;
+  }
+  .prog-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .prog-label { font-size: 13px; font-weight: 700; color: var(--navy); }
+  .prog-score { font-size: 13px; font-weight: 700; color: var(--gold-dark); }
+  .prog-bar {
+    height: 8px;
+    background: var(--gray);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .prog-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-dark));
+    border-radius: 4px;
+    transition: width 0.4s cubic-bezier(.4,0,.2,1);
+  }
+
+  /* QUIZ */
+  .q-category {
+    display: inline-block;
+    background: var(--gold-light);
+    color: var(--gold-dark);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 8px;
+    margin-bottom: 14px;
+  }
+  .q-text {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+  .opts { display: grid; gap: 10px; margin-bottom: 16px; }
+  .opt-btn {
+    background: var(--white);
+    border: 2px solid #E8ECF5;
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    cursor: pointer;
+    text-align: left;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--navy);
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .opt-btn .opt-letter {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: var(--gray);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .opt-btn:hover:not(:disabled) { border-color: var(--gold); background: var(--gold-light); }
+  .opt-btn:hover:not(:disabled) .opt-letter { background: var(--gold); color: var(--white); }
+  .opt-btn.correct { border-color: var(--green); background: var(--green-light); color: #1A6637; }
+  .opt-btn.correct .opt-letter { background: var(--green); color: var(--white); }
+  .opt-btn.wrong { border-color: var(--red); background: var(--red-light); color: #7B1F1A; }
+  .opt-btn.wrong .opt-letter { background: var(--red); color: var(--white); }
+  .opt-btn:disabled { cursor: default; }
+
+  .feedback-box {
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    display: none;
+    align-items: center;
+    gap: 10px;
+  }
+  .feedback-box.show { display: flex; }
+  .feedback-box.ok { background: var(--green-light); color: #1A6637; }
+  .feedback-box.err { background: var(--red-light); color: #7B1F1A; }
+  .feedback-icon { font-size: 18px; }
+
+  .next-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    display: none;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .next-btn.show { display: block; }
+  .next-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  .next-btn:active { transform: translateY(0); }
+
+  /* FLASH */
+  .flash-card {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+    border-radius: var(--radius);
+    padding: 40px 28px;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 14px;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+    box-shadow: var(--shadow);
+  }
+  .flash-card:hover { transform: translateY(-3px); }
+  .flash-arabic { font-size: 36px; color: var(--gold); margin-bottom: 10px; font-weight: 700; }
+  .flash-name { font-size: 30px; font-weight: 900; color: var(--white); margin-bottom: 8px; }
+  .flash-hint { font-size: 12px; color: rgba(255,255,255,0.5); font-weight: 600; }
+  .flash-back-content { display: none; }
+  .flash-tugas-label { font-size: 12px; color: rgba(255,255,255,0.6); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+  .flash-tugas { font-size: 17px; color: var(--white); font-weight: 700; line-height: 1.5; }
+
+  .flash-nav {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .nav-btn {
+    padding: 11px 14px;
+    border: 2px solid #E8ECF5;
+    border-radius: var(--radius-sm);
+    background: var(--white);
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--navy);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .nav-btn:hover { border-color: var(--gold); color: var(--gold-dark); }
+  .flash-counter { text-align: center; font-size: 14px; font-weight: 800; color: var(--navy); }
+
+  .known-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .btn-know {
+    padding: 12px;
+    border: 2px solid var(--green);
+    border-radius: var(--radius-sm);
+    background: var(--green-light);
+    color: #1A6637;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px; font-weight: 800;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-know:hover { background: var(--green); color: var(--white); }
+  .btn-dontknow {
+    padding: 12px;
+    border: 2px solid var(--red);
+    border-radius: var(--radius-sm);
+    background: var(--red-light);
+    color: #7B1F1A;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px; font-weight: 800;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-dontknow:hover { background: var(--red); color: var(--white); }
+
+  /* MATCH */
+  .match-info {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    padding: 10px;
+    background: var(--gray);
+    border-radius: var(--radius-sm);
+  }
+  .match-info strong { color: var(--navy); }
+  .match-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .match-col-label { font-size: 11px; font-weight: 800; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; text-align: center; margin-bottom: 8px; }
+  .match-items { display: grid; gap: 8px; }
+  .match-btn {
+    padding: 12px 10px;
+    border: 2px solid #E8ECF5;
+    border-radius: var(--radius-sm);
+    background: var(--white);
+    font-family: 'Nunito', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--navy);
+    cursor: pointer;
+    text-align: center;
+    line-height: 1.4;
+    transition: all 0.15s;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .match-btn:hover:not(.matched):not(.wrong-anim) { border-color: var(--gold); background: var(--gold-light); color: var(--gold-dark); }
+  .match-btn.selected { border-color: var(--navy); background: var(--navy); color: var(--white); }
+  .match-btn.matched { border-color: var(--green); background: var(--green-light); color: #1A6637; cursor: default; }
+  .match-btn.wrong-anim { border-color: var(--red); background: var(--red-light); color: #7B1F1A; }
+
+  /* TYPING */
+  .type-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #E8ECF5;
+    border-radius: var(--radius-sm);
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    outline: none;
+    transition: border-color 0.15s;
+    margin-bottom: 10px;
+  }
+  .type-input:focus { border-color: var(--gold); }
+  .type-input::placeholder { color: var(--text-muted); font-weight: 600; }
+  .cek-btn {
+    width: 100%;
+    padding: 13px;
+    background: var(--gold);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--white);
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-bottom: 12px;
+  }
+  .cek-btn:hover { background: var(--gold-dark); transform: translateY(-1px); }
+
+  /* RESULT */
+  .result-circle {
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    margin: 0 auto 16px;
+    box-shadow: var(--shadow);
+  }
+  .result-pct { font-size: 32px; font-weight: 900; color: var(--white); line-height: 1; }
+  .result-pct-label { font-size: 11px; color: rgba(255,255,255,0.6); font-weight: 700; }
+  .result-title { text-align: center; font-size: 20px; font-weight: 900; color: var(--navy); margin-bottom: 6px; }
+  .result-msg { text-align: center; font-size: 14px; color: var(--text-muted); font-weight: 600; margin-bottom: 20px; }
+  .stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .stat-card {
+    background: var(--gray);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    text-align: center;
+  }
+  .stat-n { font-size: 28px; font-weight: 900; }
+  .stat-n.benar { color: var(--green); }
+  .stat-n.salah { color: var(--red); }
+  .stat-l { font-size: 12px; color: var(--text-muted); font-weight: 700; margin-top: 2px; }
+  .action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .btn-secondary {
+    padding: 13px;
+    border: 2px solid #E8ECF5;
+    border-radius: var(--radius-sm);
+    background: var(--white);
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px; font-weight: 800;
+    color: var(--navy);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-secondary:hover { border-color: var(--navy); background: var(--gray); }
+  .btn-primary {
+    padding: 13px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(135deg, var(--navy), var(--navy-light));
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px; font-weight: 800;
+    color: var(--white);
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .btn-primary:hover { opacity: 0.88; }
+
+  /* BACK BTN */
+  .back-row { margin-bottom: 20px; }
+  .back-btn {
+    background: none;
+    border: none;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .back-btn:hover { color: var(--navy); }
+
+  /* Stars */
+  .stars { font-size: 28px; text-align: center; margin-bottom: 10px; }
+
+  /* Responsive */
+  @media (max-width: 420px) {
+    .screen { padding: 20px; }
+    .mode-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .mode-card { padding: 16px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="header-badge">Madani Bimbingan Belajar</div>
+    <h1>Game <span>Malaikat</span> 🕌</h1>
+    <div class="header-sub">Pendidikan Agama Islam — Rukun Iman ke-2</div>
+  </div>
+
+  <!-- HOME -->
+  <div id="home" class="screen active">
+    <div class="home-arabic">بِسْمِ اللَّهِ</div>
+    <div class="home-title">Pilih mode belajarmu!</div>
+    <div class="mode-grid">
+      <div class="mode-card" onclick="startQuiz()">
+        <span class="icon">❓</span>
+        <div class="mc-name">Kuis Pilihan</div>
+        <div class="mc-desc">4 pilihan jawaban</div>
+        <span class="mc-badge">10 Soal</span>
+      </div>
+      <div class="mode-card" onclick="startFlash()">
+        <span class="icon">🃏</span>
+        <div class="mc-name">Kartu Hafalan</div>
+        <div class="mc-desc">Tap kartu, lihat tugas</div>
+        <span class="mc-badge">10 Kartu</span>
+      </div>
+      <div class="mode-card" onclick="startMatch()">
+        <span class="icon">🔗</span>
+        <div class="mc-name">Cocokkan</div>
+        <div class="mc-desc">Pasangkan nama & tugas</div>
+        <span class="mc-badge">5 Pasang</span>
+      </div>
+      <div class="mode-card" onclick="startTyping()">
+        <span class="icon">⌨️</span>
+        <div class="mc-name">Isi Jawaban</div>
+        <div class="mc-desc">Ketik nama malaikat</div>
+        <span class="mc-badge">10 Soal</span>
+      </div>
+    </div>
+    <div class="madani-tag">© 2025 <strong>Madani Bimbingan Belajar</strong> · Kisaran, Sumatera Utara</div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quiz" class="screen">
+    <div class="back-row"><button class="back-btn" onclick="goHome()">← Kembali</button></div>
+    <div class="prog-wrap">
+      <div class="prog-top">
+        <span class="prog-label" id="qlabel">Soal 1 dari 10</span>
+        <span class="prog-score" id="qscore">⭐ 0</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" id="qprog" style="width:0%"></div></div>
+    </div>
+    <div class="q-category">Siapa nama malaikatnya?</div>
+    <div class="q-text" id="qtext"></div>
+    <div class="opts" id="qopts"></div>
+    <div class="feedback-box" id="qfb"><span class="feedback-icon" id="qfb-icon"></span><span id="qfb-text"></span></div>
+    <button class="next-btn" id="qnext" onclick="nextQ()"></button>
+  </div>
+
+  <!-- FLASH -->
+  <div id="flash" class="screen">
+    <div class="back-row"><button class="back-btn" onclick="goHome()">← Kembali</button></div>
+    <div class="prog-wrap">
+      <div class="prog-top">
+        <span class="prog-label">Kartu Hafalan</span>
+        <span class="prog-score" id="fknown-count">✅ 0 Hafal</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" id="fprog" style="width:0%"></div></div>
+    </div>
+    <div class="flash-card" id="fcard" onclick="flipCard()">
+      <div id="ffront-wrap">
+        <div class="flash-arabic" id="farab"></div>
+        <div class="flash-name" id="fname"></div>
+        <div class="flash-hint">👆 Tap untuk lihat tugasnya</div>
+      </div>
+      <div class="flash-back-content" id="fback-wrap">
+        <div class="flash-tugas-label">Tugasnya adalah:</div>
+        <div class="flash-tugas" id="ftugas"></div>
+      </div>
+    </div>
+    <div class="known-row" id="fknown-row" style="display:none">
+      <button class="btn-dontknow" onclick="markCard(false)">❌ Belum Hafal</button>
+      <button class="btn-know" onclick="markCard(true)">✅ Sudah Hafal!</button>
+    </div>
+    <div class="flash-nav">
+      <button class="nav-btn" onclick="prevCard()">← Prev</button>
+      <div class="flash-counter" id="fcounter">1 / 10</div>
+      <button class="nav-btn" onclick="nextCard()">Next →</button>
+    </div>
+  </div>
+
+  <!-- MATCH -->
+  <div id="match" class="screen">
+    <div class="back-row"><button class="back-btn" onclick="goHome()">← Kembali</button></div>
+    <div class="prog-wrap">
+      <div class="prog-top">
+        <span class="prog-label">Cocokkan!</span>
+        <span class="prog-score" id="mscore-lbl">0 / 5 Cocok</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" id="mprog" style="width:0%"></div></div>
+    </div>
+    <div class="match-info" id="minfo">Pilih nama malaikat, lalu pilih tugasnya!</div>
+    <div class="match-cols">
+      <div>
+        <div class="match-col-label">Nama Malaikat</div>
+        <div class="match-items" id="mnames"></div>
+      </div>
+      <div>
+        <div class="match-col-label">Tugasnya</div>
+        <div class="match-items" id="mtasks"></div>
+      </div>
+    </div>
+    <button class="btn-primary" style="width:100%" onclick="resetMatch()">🔄 Soal Baru</button>
+  </div>
+
+  <!-- TYPING -->
+  <div id="typing" class="screen">
+    <div class="back-row"><button class="back-btn" onclick="goHome()">← Kembali</button></div>
+    <div class="prog-wrap">
+      <div class="prog-top">
+        <span class="prog-label" id="tlabel">Soal 1 dari 10</span>
+        <span class="prog-score" id="tscore">⭐ 0</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" id="tprog" style="width:0%"></div></div>
+    </div>
+    <div class="q-category">Ketik nama malaikatnya!</div>
+    <div class="q-text" id="ttext"></div>
+    <input type="text" class="type-input" id="tinput" placeholder="Ketik nama malaikat..." onkeydown="if(event.key==='Enter')checkTyping()">
+    <button class="cek-btn" onclick="checkTyping()">✔ Cek Jawaban</button>
+    <div class="feedback-box" id="tfb"><span class="feedback-icon" id="tfb-icon"></span><span id="tfb-text"></span></div>
+    <button class="next-btn" id="tnext" onclick="nextT()"></button>
+  </div>
+
+  <!-- RESULT -->
+  <div id="result" class="screen">
+    <div class="stars" id="rstars"></div>
+    <div class="result-circle">
+      <div class="result-pct" id="rpct"></div>
+      <div class="result-pct-label">SKOR</div>
+    </div>
+    <div class="result-title" id="rtitle"></div>
+    <div class="result-msg" id="rmsg"></div>
+    <div class="stat-row">
+      <div class="stat-card"><div class="stat-n benar" id="rbenar"></div><div class="stat-l">✅ Benar</div></div>
+      <div class="stat-card"><div class="stat-n salah" id="rsalah"></div><div class="stat-l">❌ Salah</div></div>
+    </div>
+    <div class="action-row">
+      <button class="btn-secondary" onclick="goHome()">🏠 Menu</button>
+      <button class="btn-primary" onclick="retryMode()">🔄 Ulangi</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const data = [
+  { nama:"Jibril",    arab:"جبريل",   tugas:"Menyampaikan wahyu kepada para Nabi dan Rasul" },
+  { nama:"Mikail",    arab:"ميكائيل", tugas:"Mengatur rezeki, hujan, dan alam semesta" },
+  { nama:"Israfil",   arab:"إسرافيل", tugas:"Meniup sangkakala pada hari Kiamat" },
+  { nama:"Izrail",    arab:"عزرائيل", tugas:"Mencabut nyawa seluruh makhluk hidup" },
+  { nama:"Munkar",    arab:"منكر",     tugas:"Menanyai manusia di dalam kubur" },
+  { nama:"Nakir",     arab:"نكير",     tugas:"Menanyai manusia di kubur bersama Munkar" },
+  { nama:"Raqib",     arab:"رقيب",     tugas:"Mencatat semua amal baik manusia" },
+  { nama:"Atid",      arab:"عتيد",     tugas:"Mencatat semua amal buruk manusia" },
+  { nama:"Malik",     arab:"مالك",     tugas:"Menjaga dan mengurus neraka" },
+  { nama:"Ridwan",    arab:"رضوان",    tugas:"Menjaga dan mengurus surga" }
+];
+
+function shuffle(a) {
+  let b = [...a];
+  for (let i = b.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [b[i], b[j]] = [b[j], b[i]];
+  }
+  return b;
+}
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function goHome() { show('home'); }
+
+let curMode = '';
+function retryMode() {
+  if (curMode === 'quiz') startQuiz();
+  else if (curMode === 'typing') startTyping();
+  else goHome();
+}
+
+/* ========== QUIZ ========== */
+let qIdx = 0, qScore = 0, qWrong = 0, qData = [], qAnswered = false;
+
+function startQuiz() {
+  curMode = 'quiz';
+  qData = shuffle(data).map(d => {
+    let wrongs = shuffle(data.filter(x => x.nama !== d.nama)).slice(0, 3);
+    return { ...d, opts: shuffle([d, ...wrongs]) };
+  });
+  qIdx = 0; qScore = 0; qWrong = 0;
+  show('quiz'); renderQ();
+}
+
+function renderQ() {
+  qAnswered = false;
+  let d = qData[qIdx];
+  let pct = Math.round((qIdx / qData.length) * 100);
+  document.getElementById('qprog').style.width = pct + '%';
+  document.getElementById('qlabel').textContent = 'Soal ' + (qIdx + 1) + ' dari ' + qData.length;
+  document.getElementById('qscore').textContent = '⭐ ' + qScore;
+  document.getElementById('qtext').textContent = 'Malaikat yang bertugas "' + d.tugas + '" adalah...';
+  let letters = ['A','B','C','D'];
+  let opts = document.getElementById('qopts');
+  opts.innerHTML = '';
+  d.opts.forEach((o, i) => {
+    let b = document.createElement('button');
+    b.className = 'opt-btn';
+    b.innerHTML = '<span class="opt-letter">' + letters[i] + '</span><span>' + o.nama + ' ' + o.arab + '</span>';
+    b.onclick = () => answerQ(b, o.nama === d.nama, d.nama);
+    opts.appendChild(b);
+  });
+  let fb = document.getElementById('qfb');
+  fb.className = 'feedback-box';
+  document.getElementById('qnext').className = 'next-btn';
+}
+
+function answerQ(btn, correct, rightName) {
+  if (qAnswered) return;
+  qAnswered = true;
+  document.querySelectorAll('.opt-btn').forEach(b => {
+    b.disabled = true;
+    let nm = b.querySelector('span:last-child').textContent.trim();
+    if (nm.startsWith(rightName)) b.classList.add('correct');
+  });
+  if (!correct) { btn.classList.add('wrong'); btn.classList.remove('correct'); qWrong++; }
+  else qScore++;
+  document.getElementById('qscore').textContent = '⭐ ' + qScore;
+  let fb = document.getElementById('qfb');
+  if (correct) {
+    fb.className = 'feedback-box show ok';
+    document.getElementById('qfb-icon').textContent = '✅';
+    document.getElementById('qfb-text').textContent = 'Benar! Kamu hebat!';
+  } else {
+    fb.className = 'feedback-box show err';
+    document.getElementById('qfb-icon').textContent = '❌';
+    document.getElementById('qfb-text').textContent = 'Salah. Jawaban yang benar: Malaikat ' + rightName;
+  }
+  let nx = document.getElementById('qnext');
+  nx.className = 'next-btn show';
+  nx.textContent = qIdx < qData.length - 1 ? 'Soal Berikutnya →' : '🏆 Lihat Hasil';
+}
+
+function nextQ() {
+  qIdx++;
+  if (qIdx >= qData.length) showResult(qScore, qWrong, qData.length);
+  else renderQ();
+}
+
+/* ========== FLASH ========== */
+let fIdx = 0, fFlipped = false, fKnownCount = 0;
+
+function startFlash() {
+  fIdx = 0; fFlipped = false; fKnownCount = 0;
+  show('flash'); renderFlash();
+}
+
+function renderFlash() {
+  fFlipped = false;
+  let d = data[fIdx];
+  document.getElementById('fprog').style.width = Math.round(((fIdx + 1) / data.length) * 100) + '%';
+  document.getElementById('fcounter').textContent = (fIdx + 1) + ' / ' + data.length;
+  document.getElementById('fknown-count').textContent = '✅ ' + fKnownCount + ' Hafal';
+  document.getElementById('farab').textContent = d.arab;
+  document.getElementById('fname').textContent = d.nama;
+  document.getElementById('ftugas').textContent = d.tugas;
+  document.getElementById('ffront-wrap').style.display = 'block';
+  document.getElementById('fback-wrap').style.display = 'none';
+  document.getElementById('fknown-row').style.display = 'none';
+  document.getElementById('fcard').style.background = 'linear-gradient(135deg, #1A2744 0%, #2E4080 100%)';
+}
+
+function flipCard() {
+  if (fFlipped) return;
+  fFlipped = true;
+  document.getElementById('ffront-wrap').style.display = 'none';
+  document.getElementById('fback-wrap').style.display = 'block';
+  document.getElementById('fknown-row').style.display = 'grid';
+  document.getElementById('fcard').style.background = 'linear-gradient(135deg, #0F3460 0%, #1A5276 100%)';
+}
+
+function markCard(known) {
+  if (known) fKnownCount++;
+  nextCard();
+}
+
+function nextCard() { fIdx = (fIdx + 1) % data.length; renderFlash(); }
+function prevCard() { fIdx = (fIdx - 1 + data.length) % data.length; renderFlash(); }
+
+/* ========== MATCH ========== */
+let mSelected = null, mMatched = 0, mPool = [], mTotal = 5;
+
+function startMatch() {
+  mSelected = null; mMatched = 0;
+  mPool = shuffle(data).slice(0, mTotal);
+  show('match'); renderMatch();
+}
+
+function renderMatch() {
+  document.getElementById('mprog').style.width = '0%';
+  document.getElementById('mscore-lbl').textContent = '0 / ' + mTotal + ' Cocok';
+  document.getElementById('minfo').textContent = 'Pilih nama malaikat, lalu pilih tugasnya!';
+
+  let names = document.getElementById('mnames');
+  let tasks = document.getElementById('mtasks');
+  names.innerHTML = ''; tasks.innerHTML = '';
+
+  let shuffledTasks = shuffle(mPool);
+  mPool.forEach(d => {
+    let b = document.createElement('button');
+    b.className = 'match-btn';
+    b.textContent = d.nama + ' ' + d.arab;
+    b.dataset.key = d.nama;
+    b.dataset.type = 'name';
+    b.onclick = () => clickMatch(b);
+    names.appendChild(b);
+  });
+  shuffledTasks.forEach(d => {
+    let b = document.createElement('button');
+    b.className = 'match-btn';
+    b.textContent = d.tugas;
+    b.dataset.key = d.nama;
+    b.dataset.type = 'task';
+    b.onclick = () => clickMatch(b);
+    tasks.appendChild(b);
+  });
+}
+
+function clickMatch(btn) {
+  if (btn.classList.contains('matched')) return;
+  if (!mSelected) {
+    mSelected = btn; btn.classList.add('selected');
+  } else {
+    if (mSelected === btn) { mSelected.classList.remove('selected'); mSelected = null; return; }
+    let sameType = mSelected.dataset.type === btn.dataset.type;
+    let sameKey = mSelected.dataset.key === btn.dataset.key;
+    if (!sameType && sameKey) {
+      mSelected.classList.remove('selected');
+      mSelected.classList.add('matched');
+      btn.classList.add('matched');
+      mMatched++;
+      let pct = Math.round((mMatched / mTotal) * 100);
+      document.getElementById('mprog').style.width = pct + '%';
+      document.getElementById('mscore-lbl').textContent = mMatched + ' / ' + mTotal + ' Cocok';
+      if (mMatched === mTotal) {
+        document.getElementById('minfo').textContent = '🎉 Semua cocok! Luar biasa!';
+      }
+    } else {
+      let prev = mSelected;
+      prev.classList.remove('selected');
+      prev.classList.add('wrong-anim');
+      btn.classList.add('wrong-anim');
+      setTimeout(() => { prev.classList.remove('wrong-anim'); btn.classList.remove('wrong-anim'); }, 500);
+    }
+    mSelected = null;
+  }
+}
+
+function resetMatch() { mMatched = 0; startMatch(); }
+
+/* ========== TYPING ========== */
+let tIdx = 0, tScore = 0, tWrong = 0, tData = [], tAnswered = false;
+
+function startTyping() {
+  curMode = 'typing';
+  tData = shuffle(data);
+  tIdx = 0; tScore = 0; tWrong = 0;
+  show('typing'); renderT();
+}
+
+function renderT() {
+  tAnswered = false;
+  let d = tData[tIdx];
+  let pct = Math.round((tIdx / tData.length) * 100);
+  document.getElementById('tprog').style.width = pct + '%';
+  document.getElementById('tlabel').textContent = 'Soal ' + (tIdx + 1) + ' dari ' + tData.length;
+  document.getElementById('tscore').textContent = '⭐ ' + tScore;
+  document.getElementById('ttext').textContent = 'Malaikat yang bertugas "' + d.tugas + '" adalah...';
+  document.getElementById('tinput').value = '';
+  document.getElementById('tinput').disabled = false;
+  let fb = document.getElementById('tfb');
+  fb.className = 'feedback-box';
+  document.getElementById('tnext').className = 'next-btn';
+  setTimeout(() => document.getElementById('tinput').focus(), 100);
+}
+
+function checkTyping() {
+  if (tAnswered) return;
+  let val = document.getElementById('tinput').value.trim().toLowerCase();
+  let d = tData[tIdx];
+  if (!val) return;
+  let correct = val === d.nama.toLowerCase() || val === d.arab;
+  tAnswered = true;
+  document.getElementById('tinput').disabled = true;
+  let fb = document.getElementById('tfb');
+  if (correct) {
+    tScore++;
+    fb.className = 'feedback-box show ok';
+    document.getElementById('tfb-icon').textContent = '✅';
+    document.getElementById('tfb-text').textContent = 'Benar! Jawabannya ' + d.nama + ' ' + d.arab;
+  } else {
+    tWrong++;
+    fb.className = 'feedback-box show err';
+    document.getElementById('tfb-icon').textContent = '❌';
+    document.getElementById('tfb-text').textContent = 'Salah. Jawaban yang benar: ' + d.nama + ' (' + d.arab + ')';
+  }
+  document.getElementById('tscore').textContent = '⭐ ' + tScore;
+  let nx = document.getElementById('tnext');
+  nx.className = 'next-btn show';
+  nx.textContent = tIdx < tData.length - 1 ? 'Soal Berikutnya →' : '🏆 Lihat Hasil';
+}
+
+function nextT() {
+  tIdx++;
+  if (tIdx >= tData.length) showResult(tScore, tWrong, tData.length);
+  else renderT();
+}
+
+/* ========== RESULT ========== */
+function showResult(benar, salah, total) {
+  let pct = Math.round((benar / total) * 100);
+  document.getElementById('rpct').textContent = pct + '%';
+  document.getElementById('rbenar').textContent = benar;
+  document.getElementById('rsalah').textContent = salah;
+  let stars = pct >= 90 ? '⭐⭐⭐' : pct >= 70 ? '⭐⭐' : '⭐';
+  let title = pct === 100 ? 'Sempurna! Mashaa Allah!' : pct >= 80 ? 'Bagus Sekali!' : pct >= 60 ? 'Lumayan Bagus!' : 'Ayo Semangat!';
+  let msg = pct === 100 ? 'Kamu hafal semua malaikat dengan sempurna!' :
+            pct >= 80 ? 'Hampir sempurna! Ulangi yang masih salah ya.' :
+            pct >= 60 ? 'Sudah cukup baik, terus berlatih!' :
+            'Jangan menyerah! Baca modul lagi dan coba ulang.';
+  document.getElementById('rstars').textContent = stars;
+  document.getElementById('rtitle').textContent = title;
+  document.getElementById('rmsg').textContent = msg;
+  show('result');
+}
+</script>
+</body>
+</html>

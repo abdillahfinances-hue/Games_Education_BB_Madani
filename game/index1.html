@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hijaiyah Quest — Belajar Tajwid</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Tajawal:wght@300;400;700;900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #f0c040;
+    --gold2: #e8a820;
+    --emerald: #0fa87a;
+    --emerald2: #0d8f67;
+    --navy: #0d1b2a;
+    --navy2: #16263a;
+    --navy3: #1e3350;
+    --ruby: #e03c5a;
+    --sky: #4ab3f4;
+    --cream: #fdf6e3;
+    --white: #ffffff;
+    --text-dim: #8aa0b8;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated starfield background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(15,168,122,0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(240,192,64,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(13,27,42,1) 0%, rgba(10,18,30,1) 100%);
+    z-index: -2;
+  }
+
+  /* Decorative geometric pattern */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(45deg, transparent, transparent 60px, rgba(240,192,64,0.02) 60px, rgba(240,192,64,0.02) 61px),
+      repeating-linear-gradient(-45deg, transparent, transparent 60px, rgba(15,168,122,0.02) 60px, rgba(15,168,122,0.02) 61px);
+    z-index: -1;
+  }
+
+  /* ===== SCREEN MANAGEMENT ===== */
+  .screen { display: none; animation: fadeIn 0.5s ease; }
+  .screen.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== HEADER ===== */
+  header {
+    text-align: center;
+    padding: 40px 20px 20px;
+  }
+
+  .logo-arabic {
+    font-family: 'Amiri', serif;
+    font-size: clamp(48px, 10vw, 96px);
+    color: var(--gold);
+    text-shadow: 0 0 40px rgba(240,192,64,0.4), 0 4px 20px rgba(0,0,0,0.5);
+    line-height: 1;
+    animation: glow 3s ease-in-out infinite alternate;
+  }
+
+  @keyframes glow {
+    from { text-shadow: 0 0 30px rgba(240,192,64,0.3), 0 4px 20px rgba(0,0,0,0.5); }
+    to   { text-shadow: 0 0 60px rgba(240,192,64,0.6), 0 0 100px rgba(240,192,64,0.2); }
+  }
+
+  .logo-title {
+    font-family: 'Tajawal', sans-serif;
+    font-size: clamp(22px, 5vw, 40px);
+    font-weight: 900;
+    letter-spacing: 4px;
+    color: var(--white);
+    margin-top: 8px;
+  }
+
+  .logo-sub {
+    font-size: 13px;
+    color: var(--text-dim);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* ===== MENU ===== */
+  #screen-menu { max-width: 700px; margin: 0 auto; padding: 0 20px 60px; }
+
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 40px;
+  }
+
+  .level-card {
+    position: relative;
+    background: linear-gradient(135deg, var(--navy2), var(--navy3));
+    border: 1px solid rgba(240,192,64,0.15);
+    border-radius: 20px;
+    padding: 28px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  .level-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(240,192,64,0.05), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .level-card:hover { transform: translateY(-6px); border-color: rgba(240,192,64,0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px rgba(240,192,64,0.1); }
+  .level-card:hover::before { opacity: 1; }
+
+  .level-card.locked { opacity: 0.4; cursor: not-allowed; }
+  .level-card.locked:hover { transform: none; box-shadow: none; }
+
+  .level-icon { font-size: 42px; margin-bottom: 12px; }
+  .level-name { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+  .level-desc { font-size: 11px; color: var(--text-dim); line-height: 1.5; }
+  .level-badge {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  .badge-easy { background: rgba(15,168,122,0.2); color: var(--emerald); border: 1px solid rgba(15,168,122,0.3); }
+  .badge-med  { background: rgba(240,192,64,0.2); color: var(--gold); border: 1px solid rgba(240,192,64,0.3); }
+  .badge-hard { background: rgba(224,60,90,0.2); color: var(--ruby); border: 1px solid rgba(224,60,90,0.3); }
+  .badge-boss { background: linear-gradient(90deg,rgba(240,192,64,0.3),rgba(224,60,90,0.3)); color: #fff; border: 1px solid rgba(240,192,64,0.5); }
+
+  .stars-row { margin-top: 8px; font-size: 14px; }
+
+  /* ===== GAME SCREEN ===== */
+  #screen-game { max-width: 800px; margin: 0 auto; padding: 0 16px 60px; }
+
+  .game-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 0;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn-back {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--text-dim);
+    padding: 8px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+    font-family: 'Poppins', sans-serif;
+  }
+  .btn-back:hover { background: rgba(255,255,255,0.1); color: white; }
+
+  .hud-pills { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+  .pill {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .pill-score { border-color: rgba(240,192,64,0.3); color: var(--gold); }
+  .pill-life  { border-color: rgba(224,60,90,0.3); color: var(--ruby); }
+  .pill-prog  { border-color: rgba(15,168,122,0.3); color: var(--emerald); }
+
+  /* Progress bar */
+  .progress-bar-wrap {
+    background: rgba(255,255,255,0.06);
+    border-radius: 6px;
+    height: 6px;
+    overflow: hidden;
+    margin: 0 0 24px;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--emerald), var(--gold));
+    border-radius: 6px;
+    transition: width 0.5s ease;
+  }
+
+  /* Question card */
+  .question-card {
+    background: linear-gradient(135deg, var(--navy2), var(--navy3));
+    border: 1px solid rgba(240,192,64,0.15);
+    border-radius: 24px;
+    padding: 32px 28px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .question-card::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: 20px; right: 20px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .q-category {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+    font-weight: 700;
+  }
+
+  .q-text {
+    font-size: 15px;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.7;
+    margin-bottom: 20px;
+  }
+
+  .q-arabic {
+    font-family: 'Amiri', serif;
+    font-size: clamp(36px, 8vw, 72px);
+    color: var(--white);
+    text-align: center;
+    direction: rtl;
+    line-height: 1.4;
+    padding: 16px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 16px;
+    border: 1px solid rgba(240,192,64,0.1);
+    margin-bottom: 8px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  }
+
+  .q-transliterate {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-dim);
+    font-style: italic;
+    margin-bottom: 4px;
+  }
+
+  /* Options */
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .option-btn {
+    background: rgba(255,255,255,0.04);
+    border: 2px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 16px 14px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-align: left;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    line-height: 1.4;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .option-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(240,192,64,0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+
+  .option-btn:hover:not(:disabled) {
+    border-color: rgba(240,192,64,0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  }
+  .option-btn:hover:not(:disabled)::before { opacity: 1; }
+
+  .option-btn.correct {
+    background: rgba(15,168,122,0.15);
+    border-color: var(--emerald);
+    color: #7effd0;
+    animation: correctPulse 0.4s ease;
+  }
+  .option-btn.wrong {
+    background: rgba(224,60,90,0.15);
+    border-color: var(--ruby);
+    color: #ff9aaa;
+    animation: wrongShake 0.4s ease;
+  }
+
+  .option-btn .opt-letter {
+    display: inline-flex;
+    width: 22px; height: 22px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 6px;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    margin-right: 10px;
+    color: var(--gold);
+    flex-shrink: 0;
+  }
+
+  .option-btn.arabic-option {
+    font-family: 'Amiri', serif;
+    font-size: 22px;
+    text-align: center;
+    direction: rtl;
+  }
+
+  @keyframes correctPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+    100% { transform: scale(1); }
+  }
+  @keyframes wrongShake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+
+  /* Feedback */
+  .feedback-box {
+    background: var(--navy2);
+    border-radius: 16px;
+    padding: 20px;
+    margin-top: 16px;
+    border-left: 3px solid var(--emerald);
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+  .feedback-box.show { display: block; }
+  .feedback-box.wrong-fb { border-left-color: var(--ruby); }
+
+  .feedback-title { font-weight: 700; margin-bottom: 6px; font-size: 14px; }
+  .feedback-title.ok { color: var(--emerald); }
+  .feedback-title.no { color: var(--ruby); }
+  .feedback-body { font-size: 12px; color: rgba(255,255,255,0.7); line-height: 1.6; }
+
+  .btn-next {
+    margin-top: 16px;
+    background: linear-gradient(135deg, var(--emerald), var(--emerald2));
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 12px 28px;
+    cursor: pointer;
+    transition: all 0.25s;
+    box-shadow: 0 4px 15px rgba(15,168,122,0.3);
+    display: none;
+  }
+  .btn-next.show { display: inline-block; }
+  .btn-next:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(15,168,122,0.4); }
+
+  /* ===== RESULT SCREEN ===== */
+  #screen-result { max-width: 600px; margin: 0 auto; padding: 0 20px 60px; text-align: center; }
+
+  .result-trophy { font-size: 80px; margin: 20px 0; animation: bounce 1s ease; }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
+
+  .result-title { font-family: 'Tajawal', sans-serif; font-size: 32px; font-weight: 900; }
+  .result-score-big {
+    font-size: 72px;
+    font-weight: 700;
+    color: var(--gold);
+    text-shadow: 0 0 30px rgba(240,192,64,0.4);
+    margin: 10px 0;
+    font-family: 'Tajawal', sans-serif;
+  }
+
+  .result-stats {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 12px;
+    margin: 24px 0;
+  }
+  .stat-box {
+    background: var(--navy2);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+    padding: 16px;
+  }
+  .stat-num { font-size: 28px; font-weight: 700; color: var(--gold); }
+  .stat-lbl { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+  .result-review {
+    text-align: left;
+    background: var(--navy2);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 24px;
+    max-height: 260px;
+    overflow-y: auto;
+  }
+  .result-review h4 { font-size: 13px; color: var(--text-dim); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+  .review-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .review-item:last-child { border-bottom: none; }
+  .review-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  .btn-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--gold), var(--gold2));
+    border: none;
+    border-radius: 12px;
+    color: var(--navy);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 14px 28px;
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+  .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(240,192,64,0.3); }
+
+  .btn-secondary {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 14px 28px;
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+  .btn-secondary:hover { background: rgba(255,255,255,0.12); }
+
+  /* Stars */
+  .stars-display { font-size: 36px; margin: 12px 0; }
+
+  /* Combo badge */
+  .combo-flash {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    background: linear-gradient(135deg, var(--gold), var(--ruby));
+    padding: 16px 32px;
+    border-radius: 20px;
+    font-size: 22px;
+    font-weight: 900;
+    color: white;
+    pointer-events: none;
+    animation: comboFly 1s ease forwards;
+    z-index: 999;
+  }
+  @keyframes comboFly {
+    0% { opacity: 0; transform: translate(-50%,-60%) scale(0.5); }
+    40% { opacity: 1; transform: translate(-50%,-50%) scale(1.1); }
+    80% { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%,-30%) scale(0.9); }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+
+  @media (max-width: 480px) {
+    .options-grid { grid-template-columns: 1fr; }
+    .result-stats { grid-template-columns: repeat(3,1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== MENU SCREEN ===== -->
+<div id="screen-menu" class="screen active">
+  <header>
+    <div class="logo-arabic">الحروف الهجائية</div>
+    <div class="logo-title">HIJAIYAH QUEST</div>
+    <div class="logo-sub">Belajar Tajwid Interaktif</div>
+  </header>
+
+  <div id="screen-menu-inner" style="max-width:700px;margin:0 auto;padding:0 20px 60px;">
+    <div class="menu-grid" id="levelGrid"></div>
+  </div>
+</div>
+
+<!-- ===== GAME SCREEN ===== -->
+<div id="screen-game" class="screen">
+  <div class="game-topbar">
+    <button class="btn-back" onclick="goMenu()">← Menu</button>
+    <div class="hud-pills">
+      <div class="pill pill-score">⭐ <span id="hud-score">0</span></div>
+      <div class="pill pill-life">❤️ <span id="hud-life">3</span></div>
+      <div class="pill pill-prog">📖 <span id="hud-prog">0/0</span></div>
+    </div>
+  </div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+  </div>
+
+  <div class="question-card">
+    <div class="q-category" id="qCategory">KATEGORI</div>
+    <div class="q-text" id="qText"></div>
+    <div class="q-arabic" id="qArabic" style="display:none"></div>
+    <div class="q-transliterate" id="qTranslit" style="display:none"></div>
+  </div>
+
+  <div class="options-grid" id="optionsGrid"></div>
+
+  <div class="feedback-box" id="feedbackBox">
+    <div class="feedback-title" id="feedbackTitle"></div>
+    <div class="feedback-body" id="feedbackBody"></div>
+  </div>
+
+  <button class="btn-next" id="btnNext" onclick="nextQuestion()">Lanjut →</button>
+</div>
+
+<!-- ===== RESULT SCREEN ===== -->
+<div id="screen-result" class="screen">
+  <header style="padding-top:30px;">
+    <div class="logo-arabic" style="font-size:40px">الحروف</div>
+  </header>
+  <div class="result-trophy" id="resultTrophy">🏆</div>
+  <div class="result-title" id="resultTitle">Selesai!</div>
+  <div class="stars-display" id="resultStars">⭐⭐⭐</div>
+  <div class="result-score-big" id="resultScore">0</div>
+  <div style="color:var(--text-dim);font-size:13px;margin-bottom:16px">Total Poin</div>
+
+  <div class="result-stats">
+    <div class="stat-box">
+      <div class="stat-num" id="resCorrect">0</div>
+      <div class="stat-lbl">Benar</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" id="resWrong">0</div>
+      <div class="stat-lbl">Salah</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" id="resAccuracy">0%</div>
+      <div class="stat-lbl">Akurasi</div>
+    </div>
+  </div>
+
+  <div class="result-review" id="resultReview">
+    <h4>Review Soal</h4>
+    <div id="reviewItems"></div>
+  </div>
+
+  <div class="btn-group">
+    <button class="btn-primary" id="btnRetry" onclick="retryLevel()">🔄 Ulangi</button>
+    <button class="btn-secondary" onclick="goMenu()">🏠 Menu</button>
+  </div>
+</div>
+
+<script>
+// ========================================================
+// DATA SOAL
+// ========================================================
+const LEVELS = [
+  {
+    id: 0,
+    name: "Mengenal Huruf",
+    icon: "🔤",
+    desc: "Nama & bunyi huruf hijaiyah dasar",
+    badge: "easy",
+    badgeText: "PEMULA",
+    stars: 0,
+    questions: [
+      {
+        type: "NAMA HURUF",
+        q: "Huruf apakah ini?",
+        arabic: "ب",
+        translit: "—",
+        opts: ["Ba", "Ta", "Tsa", "Na"],
+        answer: 0,
+        exp: "ب dibaca 'Ba'. Huruf ke-2 dalam abjad hijaiyah."
+      },
+      {
+        type: "NAMA HURUF",
+        q: "Huruf apakah ini?",
+        arabic: "ث",
+        translit: "—",
+        opts: ["Ba", "Ta", "Tsa", "Sa"],
+        answer: 2,
+        exp: "ث dibaca 'Tsa'. Berbeda dengan ت (Ta)."
+      },
+      {
+        type: "NAMA HURUF",
+        q: "Huruf apakah ini?",
+        arabic: "ع",
+        translit: "—",
+        opts: ["Ain", "Ghain", "Ha", "Kha"],
+        answer: 0,
+        exp: "ع adalah huruf 'Ain — keluar dari tenggorokan."
+      },
+      {
+        type: "PILIH HURUF",
+        q: "Manakah huruf 'Qaf'?",
+        opts: ["ف", "ق", "ك", "غ"],
+        answer: 1,
+        isArabicOpt: true,
+        exp: "ق adalah huruf Qaf. Bedakan dengan ف (Fa) dan ك (Kaf)."
+      },
+      {
+        type: "PILIH HURUF",
+        q: "Manakah huruf 'Dzal'?",
+        opts: ["ذ", "ز", "ر", "د"],
+        answer: 0,
+        isArabicOpt: true,
+        exp: "ذ adalah Dzal. Mirip dengan د (Dal) tapi ada titik di atas."
+      },
+      {
+        type: "NAMA HURUF",
+        q: "Huruf apakah ini?",
+        arabic: "ض",
+        translit: "—",
+        opts: ["Dad", "Dhal", "Za", "Zha"],
+        answer: 0,
+        exp: "ض adalah huruf Dad. Dikenal sebagai 'Sayyidul Huruf' (penghulu huruf)."
+      },
+      {
+        type: "PILIH HURUF",
+        q: "Manakah huruf 'Syin'?",
+        opts: ["س", "ش", "ص", "ظ"],
+        answer: 1,
+        isArabicOpt: true,
+        exp: "ش adalah Syin. Berbeda dengan س (Sin) yang tidak ada titik."
+      },
+      {
+        type: "NAMA HURUF",
+        q: "Huruf apakah ini?",
+        arabic: "ظ",
+        translit: "—",
+        opts: ["Za", "Dhal", "Dho", "Zha"],
+        answer: 3,
+        exp: "ظ dibaca 'Zha'. Termasuk huruf-huruf tebal (isti'la)."
+      }
+    ]
+  },
+
+  {
+    id: 1,
+    name: "Harakat & Tanwin",
+    icon: "✨",
+    desc: "Fathah, Kasrah, Dhammah & Tanwin",
+    badge: "easy",
+    badgeText: "DASAR",
+    stars: 0,
+    questions: [
+      {
+        type: "HARAKAT",
+        q: "Tanda baca apakah yang ada pada huruf ini?",
+        arabic: "بَ",
+        translit: "Ba",
+        opts: ["Fathah", "Kasrah", "Dhammah", "Sukun"],
+        answer: 0,
+        exp: "Fathah ( َ ) di atas huruf menghasilkan bunyi 'a'. Contoh: بَ = ba."
+      },
+      {
+        type: "HARAKAT",
+        q: "Bagaimana bunyi huruf ini?",
+        arabic: "كِ",
+        translit: "—",
+        opts: ["Ka", "Ki", "Ku", "Kak"],
+        answer: 1,
+        exp: "Kasrah ( ِ ) di bawah huruf menghasilkan bunyi 'i'. بِ = bi, كِ = ki."
+      },
+      {
+        type: "TANWIN",
+        q: "Tanwin fathah ( ً ) dibaca...",
+        arabic: "كِتَابًا",
+        translit: "Kitaaban",
+        opts: ["an", "in", "un", "am"],
+        answer: 0,
+        exp: "Tanwin fathah = 'an'. Contoh: كِتَابًا = kitaaban."
+      },
+      {
+        type: "TANWIN",
+        q: "Tanwin dhammah ( ٌ ) dibaca...",
+        arabic: "بَيْتٌ",
+        translit: "Baitun",
+        opts: ["an", "in", "un", "ak"],
+        answer: 2,
+        exp: "Tanwin dhammah = 'un'. Contoh: بَيْتٌ = baitun."
+      },
+      {
+        type: "TANWIN",
+        q: "Tanwin kasrah ( ٍ ) dibaca...",
+        arabic: "مَسْجِدٍ",
+        translit: "Masjidin",
+        opts: ["an", "in", "un", "im"],
+        answer: 1,
+        exp: "Tanwin kasrah = 'in'. Contoh: مَسْجِدٍ = masjidin."
+      },
+      {
+        type: "HARAKAT",
+        q: "Huruf dengan sukun ( ْ ) dibaca...",
+        arabic: "مِنْ",
+        translit: "Min",
+        opts: ["Mina", "Minu", "Min (mati)", "Mini"],
+        answer: 2,
+        exp: "Sukun berarti huruf mati/berhenti. مِنْ = min (n mati)."
+      },
+      {
+        type: "HARAKAT",
+        q: "Tasydid ( ّ ) berarti...",
+        arabic: "إِنَّ",
+        translit: "Inna",
+        opts: ["Huruf dibaca ringan", "Huruf dibaca panjang", "Huruf dibaca double/ditekan", "Huruf tidak dibaca"],
+        answer: 2,
+        exp: "Tasydid berarti huruf dibaca ganda/ditekan. إِنَّ = 'Inna' (nn ditekan)."
+      },
+      {
+        type: "HARAKAT",
+        q: "Berapa panjang Mad Thabi'i (alif setelah fathah)?",
+        arabic: "قَالَ",
+        translit: "Qaala",
+        opts: ["1 harakat", "2 harakat", "4 harakat", "6 harakat"],
+        answer: 1,
+        exp: "Mad Thabi'i dibaca 2 harakat. قَالَ = 'Qaala' — a-nya panjang 2 ketuk."
+      }
+    ]
+  },
+
+  {
+    id: 2,
+    name: "Nun Mati & Tanwin",
+    icon: "📚",
+    desc: "4 Hukum: Idzhar, Idgham, Iqlab, Ikhfa",
+    badge: "med",
+    badgeText: "MENENGAH",
+    stars: 0,
+    questions: [
+      {
+        type: "NUN MATI",
+        q: "Nun mati (نْ) bertemu huruf ب — apa hukumnya?",
+        arabic: "مِنْ بَعْدِ",
+        translit: "Min ba'di",
+        opts: ["Idzhar Halqi", "Idgham", "Iqlab", "Ikhfa"],
+        answer: 2,
+        exp: "Iqlab: Nun mati bertemu ب → bunyi nun berubah jadi MAM yang samar, bukan 'n'. Dibaca: 'mim ba'di' (n→m)."
+      },
+      {
+        type: "NUN MATI",
+        q: "Nun mati bertemu huruf ح — apa hukumnya?",
+        arabic: "مَنْ حَوْلَكَ",
+        translit: "Man hawlaka",
+        opts: ["Idzhar Halqi", "Idgham", "Iqlab", "Ikhfa"],
+        answer: 0,
+        exp: "Idzhar Halqi: Nun mati bertemu huruf halq (أ ه ع ح غ خ) → dibaca jelas. 'Man hawlaka' — n-nya jelas."
+      },
+      {
+        type: "NUN MATI",
+        q: "Nun mati bertemu ي — apa hukumnya?",
+        arabic: "مَنْ يَعْمَلُ",
+        translit: "Man ya'malu",
+        opts: ["Idzhar", "Idgham Bighunnah", "Iqlab", "Ikhfa"],
+        answer: 1,
+        exp: "Idgham Bighunnah: Nun mati bertemu (ي ن م و) → nun melebur dengan dengung. Huruf idgham bighunnah: ي ن م و."
+      },
+      {
+        type: "NUN MATI",
+        q: "Nun mati bertemu ف — apa hukumnya?",
+        arabic: "أَنْفُسَكُمْ",
+        translit: "Anfusakum",
+        opts: ["Idzhar", "Idgham", "Iqlab", "Ikhfa"],
+        answer: 3,
+        exp: "Ikhfa: Nun mati bertemu selain huruf idzhar, idgham, iqlab → dibaca samar dengan dengung. Huruf ikhfa: ت ث ج د ذ ز س ش ص ض ط ظ ف ق ك."
+      },
+      {
+        type: "NUN MATI",
+        q: "Nun mati bertemu ع — apa hukumnya?",
+        arabic: "مِنْ عِلْمٍ",
+        translit: "Min 'ilmin",
+        opts: ["Idzhar Halqi", "Idgham Bila Ghunnah", "Iqlab", "Ikhfa"],
+        answer: 0,
+        exp: "Idzhar Halqi karena ع termasuk huruf halqi. Dibaca jelas: 'min 'ilmin'."
+      },
+      {
+        type: "NUN MATI",
+        q: "Nun mati bertemu ل — apa hukumnya?",
+        arabic: "مِنْ لَدُنْكَ",
+        translit: "Min ladunka",
+        opts: ["Idzhar", "Idgham Bighunnah", "Idgham Bila Ghunnah", "Ikhfa"],
+        answer: 2,
+        exp: "Idgham Bila Ghunnah: Nun mati bertemu ل atau ر → melebur TANPA dengung. Huruf: ل ر."
+      },
+      {
+        type: "NUN MATI",
+        q: "Tanwin bertemu ك — apa hukumnya?",
+        arabic: "عَلِيمٌ كَبِيرٌ",
+        translit: "'Aliimun Kabiir",
+        opts: ["Idzhar", "Idgham", "Iqlab", "Ikhfa"],
+        answer: 3,
+        exp: "Ikhfa: Tanwin bertemu ك → bunyi tanwin samar dengan sedikit dengung."
+      },
+      {
+        type: "NUN MATI",
+        q: "Ada berapa huruf Idzhar Halqi?",
+        opts: ["4 huruf", "5 huruf", "6 huruf", "8 huruf"],
+        answer: 2,
+        exp: "Idzhar Halqi punya 6 huruf: أ ه ع ح غ خ. Semuanya keluar dari tenggorokan (halq)."
+      }
+    ]
+  },
+
+  {
+    id: 3,
+    name: "Qalqalah & Tasydid",
+    icon: "🔔",
+    desc: "Memantul, tebal-tipis, dan mim mati",
+    badge: "med",
+    badgeText: "MENENGAH",
+    stars: 0,
+    questions: [
+      {
+        type: "QALQALAH",
+        q: "Huruf mana yang BUKAN termasuk huruf Qalqalah?",
+        opts: ["ق", "ب", "ت", "ج"],
+        answer: 2,
+        isArabicOpt: true,
+        exp: "Huruf Qalqalah ada 5: ق ط ب ج د — disingkat 'Qutbu Jadin'. ت bukan termasuk."
+      },
+      {
+        type: "QALQALAH",
+        q: "Apa ciri khas bacaan Qalqalah?",
+        arabic: "يَطْبَعُ",
+        translit: "Yathba'u",
+        opts: ["Dibaca panjang", "Dipantulkan/dipantul", "Dibaca samar", "Dilebur"],
+        answer: 1,
+        exp: "Qalqalah artinya memantul/bergolak. Huruf qalqalah yang mati dibaca dengan pantulan suara. Contoh: ط dalam يَطْبَعُ."
+      },
+      {
+        type: "QALQALAH",
+        q: "Qalqalah Kubra adalah qalqalah yang terjadi...",
+        arabic: "قُلْ هُوَ اللَّهُ أَحَدٌ",
+        translit: "—",
+        opts: ["Di tengah kata", "Di akhir bacaan (waqaf)", "Di awal kata", "Setiap saat"],
+        answer: 1,
+        exp: "Qalqalah Kubra (besar) terjadi saat waqaf (berhenti) di huruf qalqalah. Pantulannya lebih kuat dari Qalqalah Sughra."
+      },
+      {
+        type: "TASYDID",
+        q: "Ghunnah musyaddadah adalah...",
+        arabic: "إِنَّ",
+        translit: "Inna",
+        opts: ["Nun/Mim bertasydid, dengung 2 harakat", "Nun mati tanpa dengung", "Idgham tanpa mim", "Iqlab dengan samar"],
+        answer: 0,
+        exp: "Ghunnah Musyaddadah: Nun (نّ) atau Mim (مّ) bertasydid wajib dengung 2 harakat. Contoh: إِنَّ, إِمَّا."
+      },
+      {
+        type: "TASYDID",
+        q: "Berapa harakat panjang ghunnah?",
+        opts: ["1 harakat", "2 harakat", "3 harakat", "4 harakat"],
+        answer: 1,
+        exp: "Ghunnah (dengung) dibaca 2 harakat. Ini berlaku untuk ghunnah musyaddadah, idgham bighunnah, iqlab, dan ikhfa."
+      },
+      {
+        type: "MIM MATI",
+        q: "Mim mati bertemu ب — apa hukumnya?",
+        arabic: "تَرْمِيهِم بِحِجَارَةٍ",
+        translit: "Tarmiihim bihijaarah",
+        opts: ["Ikhfa Syafawi", "Idgham Mitslain", "Idzhar Syafawi", "Iqlab"],
+        answer: 0,
+        exp: "Ikhfa Syafawi: Mim mati bertemu ب → dibaca samar dengan dengung. Hanya terjadi pada 1 huruf: ب."
+      },
+      {
+        type: "MIM MATI",
+        q: "Mim mati bertemu م — apa hukumnya?",
+        arabic: "لَهُمْ مَا",
+        translit: "Lahum maa",
+        opts: ["Ikhfa Syafawi", "Idgham Mitslain", "Idzhar Syafawi", "Idgham Bighunnah"],
+        answer: 1,
+        exp: "Idgham Mitslain (Mimi): Mim mati bertemu م → mim melebur dengan dengung (seperti mim panjang)."
+      },
+      {
+        type: "MIM MATI",
+        q: "Mim mati bertemu ك — apa hukumnya?",
+        arabic: "لَهُمْ كَيْدًا",
+        translit: "Lahum kaidan",
+        opts: ["Ikhfa Syafawi", "Idgham Mitslain", "Idzhar Syafawi", "Ikhfa Bilaghunnah"],
+        answer: 2,
+        exp: "Idzhar Syafawi: Mim mati bertemu selain ب dan م → dibaca jelas. Berlaku untuk 26 huruf hijaiyah lainnya."
+      }
+    ]
+  },
+
+  {
+    id: 4,
+    name: "Hukum Ra & Lam",
+    icon: "🎯",
+    desc: "Tafkhim, Tarqiq & Lam Jalalah",
+    badge: "hard",
+    badgeText: "LANJUTAN",
+    stars: 0,
+    questions: [
+      {
+        type: "HURUF RA",
+        q: "Ra dibaca tebal (Tafkhim) jika...",
+        arabic: "رَبَّنَا",
+        translit: "Rabbanaa",
+        opts: ["Ra berharakat fathah/dhammah", "Ra berharakat kasrah", "Ra setelah kasrah", "Ra bertemu lam"],
+        answer: 0,
+        exp: "Ra Tafkhim: Ra berharakat fathah atau dhammah → dibaca tebal/berat. رَبَّنَا = 'Rabbanaa' dengan Ra tebal."
+      },
+      {
+        type: "HURUF RA",
+        q: "Ra dibaca tipis (Tarqiq) jika...",
+        arabic: "رِزْقًا",
+        translit: "Rizqan",
+        opts: ["Berharakat fathah", "Berharakat kasrah atau setelah kasrah", "Berada di awal kata", "Sebelum alif"],
+        answer: 1,
+        exp: "Ra Tarqiq: Ra berharakat kasrah → dibaca ringan/tipis. رِزْقًا = 'Rizqan' — Ra-nya tipis."
+      },
+      {
+        type: "LAM JALALAH",
+        q: "Lam jalalah dibaca tebal (Tafkhim) jika...",
+        arabic: "قَالَ اللَّهُ",
+        translit: "Qaalallaahu",
+        opts: ["Sebelumnya kasrah", "Sebelumnya fathah atau dhammah", "Selalu tebal", "Selalu tipis"],
+        answer: 1,
+        exp: "Lam jalalah (الله) tafkhim jika sebelumnya berharakat fathah atau dhammah. Tarqiq jika sebelumnya kasrah."
+      },
+      {
+        type: "LAM JALALAH",
+        q: "Bagaimana cara baca لفظ الجلالة berikut?",
+        arabic: "بِسْمِ اللَّهِ",
+        translit: "Bismillaah",
+        opts: ["Tebal karena sebelum kasrah", "Tipis karena sebelumnya kasrah", "Tebal selalu", "Dengung 2 harakat"],
+        answer: 1,
+        exp: "بِسْمِ اللَّهِ — sebelum lam jalalah ada kasrah (ِ), maka Lam dibaca TIPIS (Tarqiq)."
+      },
+      {
+        type: "HURUF RA",
+        q: "Apa hukum Ra pada kata ini?",
+        arabic: "مِصْرَ",
+        translit: "Mishro (waqaf)",
+        opts: ["Tafkhim (tebal)", "Tarqiq (tipis)", "Bisa tebal atau tipis", "Tidak dibaca"],
+        answer: 2,
+        exp: "Ra sukun setelah kasrah asli tapi sebelum huruf isti'la (tebal) → boleh tafkhim dan tarqiq. Ini termasuk khilaf (perbedaan ulama)."
+      },
+      {
+        type: "HURUF RA",
+        q: "Ra sukun karena waqaf setelah fathah — hukumnya?",
+        arabic: "الْكَافِرُ",
+        translit: "Al-kaafir",
+        opts: ["Tarqiq", "Tafkhim", "Ikhfa", "Qalqalah"],
+        answer: 1,
+        exp: "Ra sukun karena waqaf setelah harakat fathah → Tafkhim (tebal). الكافِرْ — Ra di akhir tebal."
+      }
+    ]
+  },
+
+  {
+    id: 5,
+    name: "CAMPURAN TOTAL",
+    icon: "🏆",
+    desc: "Semua materi: uji kemampuanmu!",
+    badge: "boss",
+    badgeText: "BOSS LEVEL",
+    stars: 0,
+    questions: [
+      {
+        type: "NUN MATI",
+        q: "Tentukan hukum bacaan nun mati berikut:",
+        arabic: "مِنْ قَبْلِ",
+        translit: "Min qabli",
+        opts: ["Idzhar Halqi", "Idgham Bighunnah", "Ikhfa", "Iqlab"],
+        answer: 2,
+        exp: "Ikhfa: Nun mati bertemu ق (termasuk huruf ikhfa). Dibaca samar dengan dengung."
+      },
+      {
+        type: "QALQALAH",
+        q: "Identifikasi hukum tajwid yang ada:",
+        arabic: "وَالطَّارِقِ",
+        translit: "Wath-thaariq",
+        opts: ["Hanya Qalqalah Sughra", "Hanya Tasydid", "Qalqalah Kubra + Tasydid", "Tidak ada"],
+        answer: 2,
+        exp: "ط bertasydid (ghunnah/penekanan) + ق di akhir saat waqaf = Qalqalah Kubra."
+      },
+      {
+        type: "MIM MATI",
+        q: "Apa hukum bacaan mim mati ini?",
+        arabic: "هُمْ فِيهَا",
+        translit: "Hum fiihaa",
+        opts: ["Ikhfa Syafawi", "Idgham Mitslain", "Idzhar Syafawi", "Iqlab"],
+        answer: 2,
+        exp: "Idzhar Syafawi: Mim mati (مْ) bertemu ف → dibaca jelas, karena ف bukan ب maupun م."
+      },
+      {
+        type: "TANWIN",
+        q: "Tentukan hukum tanwin pada ayat ini:",
+        arabic: "غَفُورٌ رَّحِيمٌ",
+        translit: "Ghafuurur-Rahiim",
+        opts: ["Idzhar", "Idgham Bila Ghunnah", "Idgham Bighunnah", "Ikhfa"],
+        answer: 1,
+        exp: "Tanwin dhammah (ٌ) bertemu ر → Idgham Bila Ghunnah. Melebur tanpa dengung karena ر termasuk huruf idgham bila ghunnah."
+      },
+      {
+        type: "CAMPURAN",
+        q: "Ada berapa hukum tajwid yang bisa ditemukan?",
+        arabic: "إِنَّمَا يَخْشَى اللَّهَ",
+        translit: "Innamaa yakhsyallaah",
+        opts: ["1 hukum", "2 hukum", "3 hukum", "4 hukum"],
+        answer: 2,
+        exp: "Ada 3: (1) إِنَّ = Ghunnah Musyaddadah, (2) مَا يَ = Idgham bilaghunnah (tidak langsung), (3) اللَّهَ = Lam Jalalah Tafkhim (sebelum fathah)."
+      },
+      {
+        type: "HURUF RA",
+        q: "Bagaimana bunyi Ra pada kata ini?",
+        arabic: "الرَّحْمَنِ الرَّحِيمِ",
+        translit: "Ar-Rahmaanir-Rahiim",
+        opts: ["Keduanya tipis", "Keduanya tebal", "Pertama tebal, kedua tipis", "Pertama tipis, kedua tebal"],
+        answer: 1,
+        exp: "Kedua Ra berharakat fathah → keduanya TEBAL (Tafkhim). الرَّحْمَنِ dan الرَّحِيمِ — Ra tebal karena fathah."
+      },
+      {
+        type: "CAMPURAN",
+        q: "Nun mati bertemu م — apa hukumnya?",
+        arabic: "مِنْ مَاءٍ",
+        translit: "Min maa-in",
+        opts: ["Idzhar", "Idgham Bighunnah", "Iqlab", "Ikhfa"],
+        answer: 1,
+        exp: "Idgham Bighunnah: Nun mati bertemu م (termasuk ينمو) → melebur dengan dengung."
+      },
+      {
+        type: "QALQALAH",
+        q: "Manakah contoh Qalqalah Sughra yang benar?",
+        opts: [
+          "بَابٌ (waqaf)",
+          "يَجْعَلُ (di tengah kalimat)",
+          "أَحَدٌ (akhir surat)",
+          "اقْرَأْ (akhir)"
+        ],
+        answer: 1,
+        exp: "Qalqalah Sughra: huruf qalqalah mati di TENGAH kata/kalimat (bukan waqaf). يَجْعَلُ = ج mati di tengah."
+      },
+      {
+        type: "NUN MATI",
+        q: "Apa hukum bacaan ini?",
+        arabic: "مَنْ آمَنَ",
+        translit: "Man aamana",
+        opts: ["Idgham", "Idzhar Halqi", "Ikhfa", "Iqlab"],
+        answer: 1,
+        exp: "Idzhar Halqi: Nun mati bertemu أ (hamzah), termasuk huruf halqi. Dibaca jelas: 'man aamana'."
+      },
+      {
+        type: "CAMPURAN",
+        q: "Tentukan SEMUA hukum pada ayat ini:",
+        arabic: "قُلْ هُوَ اللَّهُ أَحَدٌ",
+        translit: "Qul huwallaahu ahad",
+        opts: [
+          "Qalqalah Kubra + Lam Jalalah Tafkhim + Idzhar",
+          "Hanya Qalqalah",
+          "Ikhfa + Idgham + Idzhar",
+          "Lam Tafkhim + Tanwin + Qalqalah"
+        ],
+        answer: 0,
+        exp: "قُلْ = Qalqalah Kubra (waqaf pada ل), اللَّهُ = Lam Jalalah Tafkhim (sebelum dhammah), أَحَدٌ = Idzhar (tanwin + hamzah)."
+      }
+    ]
+  }
+];
+
+// ========================================================
+// GAME STATE
+// ========================================================
+let state = {
+  levelIdx: 0,
+  questions: [],
+  current: 0,
+  score: 0,
+  lives: 3,
+  answers: [], // {correct, q, chosen, exp}
+  combo: 0
+};
+
+// ========================================================
+// UTILS
+// ========================================================
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function shuffle(arr) {
+  let a = [...arr];
+  for (let i = a.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ========================================================
+// BUILD MENU
+// ========================================================
+function buildMenu() {
+  const grid = document.getElementById('levelGrid');
+  grid.innerHTML = '';
+  LEVELS.forEach((lv, i) => {
+    const stars = '⭐'.repeat(lv.stars) + '☆'.repeat(3 - lv.stars);
+    const locked = i > 0 && LEVELS[i-1].stars === 0;
+    const card = document.createElement('div');
+    card.className = 'level-card' + (locked ? ' locked' : '');
+    card.innerHTML = `
+      <div class="level-icon">${lv.icon}</div>
+      <div class="level-name">${lv.name}</div>
+      <div class="level-desc">${lv.desc}</div>
+      <div><span class="level-badge badge-${lv.badge}">${lv.badgeText}</span></div>
+      <div class="stars-row">${stars}</div>
+    `;
+    if (!locked) card.onclick = () => startLevel(i);
+    grid.appendChild(card);
+  });
+}
+
+// ========================================================
+// START LEVEL
+// ========================================================
+function startLevel(idx) {
+  state.levelIdx = idx;
+  state.questions = shuffle(LEVELS[idx].questions);
+  state.current = 0;
+  state.score = 0;
+  state.lives = 3;
+  state.answers = [];
+  state.combo = 0;
+  show('screen-game');
+  renderQuestion();
+}
+
+function retryLevel() {
+  startLevel(state.levelIdx);
+}
+
+function goMenu() {
+  buildMenu();
+  show('screen-menu');
+}
+
+// ========================================================
+// RENDER QUESTION
+// ========================================================
+function renderQuestion() {
+  const q = state.questions[state.current];
+  const total = state.questions.length;
+
+  // HUD
+  document.getElementById('hud-score').textContent = state.score;
+  document.getElementById('hud-life').textContent = '❤️'.repeat(state.lives);
+  document.getElementById('hud-prog').textContent = `${state.current+1}/${total}`;
+  document.getElementById('progressFill').style.width = `${(state.current/total)*100}%`;
+
+  // Category
+  document.getElementById('qCategory').textContent = q.type;
+  document.getElementById('qText').textContent = q.q;
+
+  // Arabic display
+  const arEl = document.getElementById('qArabic');
+  const trEl = document.getElementById('qTranslit');
+  if (q.arabic) {
+    arEl.textContent = q.arabic;
+    arEl.style.display = 'block';
+    trEl.style.display = 'block';
+    trEl.textContent = q.translit !== '—' ? `(${q.translit})` : '';
+  } else {
+    arEl.style.display = 'none';
+    trEl.style.display = 'none';
+  }
+
+  // Options
+  const grid = document.getElementById('optionsGrid');
+  grid.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn' + (q.isArabicOpt ? ' arabic-option' : '');
+    if (q.isArabicOpt) {
+      btn.innerHTML = `<span style="font-size:13px;font-family:'Poppins',sans-serif;opacity:0.5;display:block;text-align:left;direction:ltr">${letters[i]}</span>${opt}`;
+    } else {
+      btn.innerHTML = `<span class="opt-letter">${letters[i]}</span>${opt}`;
+    }
+    btn.onclick = () => selectAnswer(i);
+    grid.appendChild(btn);
+  });
+
+  // Feedback reset
+  const fb = document.getElementById('feedbackBox');
+  fb.classList.remove('show','wrong-fb');
+  document.getElementById('btnNext').classList.remove('show');
+}
+
+// ========================================================
+// SELECT ANSWER
+// ========================================================
+function selectAnswer(chosen) {
+  const q = state.questions[state.current];
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach(b => b.disabled = true);
+
+  const correct = chosen === q.answer;
+
+  btns[chosen].classList.add(correct ? 'correct' : 'wrong');
+  if (!correct) btns[q.answer].classList.add('correct');
+
+  // Score & combo
+  if (correct) {
+    state.combo++;
+    const pts = 10 + (state.combo > 2 ? state.combo * 3 : 0);
+    state.score += pts;
+    document.getElementById('hud-score').textContent = state.score;
+    if (state.combo >= 3) showCombo(state.combo);
+  } else {
+    state.combo = 0;
+    state.lives = Math.max(0, state.lives - 1);
+    document.getElementById('hud-life').textContent = '❤️'.repeat(state.lives) + '🖤'.repeat(3 - state.lives);
+  }
+
+  // Record
+  state.answers.push({ correct, q: q.q, arabic: q.arabic||'', chosen: q.opts[chosen], correctAns: q.opts[q.answer], exp: q.exp });
+
+  // Feedback
+  const fb = document.getElementById('feedbackBox');
+  document.getElementById('feedbackTitle').className = 'feedback-title ' + (correct ? 'ok' : 'no');
+  document.getElementById('feedbackTitle').textContent = correct ? '✅ Benar!' : '❌ Salah!';
+  document.getElementById('feedbackBody').textContent = q.exp;
+  fb.classList.toggle('wrong-fb', !correct);
+  fb.classList.add('show');
+  document.getElementById('btnNext').classList.add('show');
+}
+
+// ========================================================
+// NEXT QUESTION
+// ========================================================
+function nextQuestion() {
+  if (state.lives <= 0) { showResult(); return; }
+  state.current++;
+  if (state.current >= state.questions.length) { showResult(); return; }
+  renderQuestion();
+}
+
+// ========================================================
+// COMBO FLASH
+// ========================================================
+function showCombo(n) {
+  const el = document.createElement('div');
+  el.className = 'combo-flash';
+  el.textContent = `🔥 COMBO x${n}!`;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1000);
+}
+
+// ========================================================
+// SHOW RESULT
+// ========================================================
+function showResult() {
+  const total = state.questions.length;
+  const correct = state.answers.filter(a => a.correct).length;
+  const wrong = total - correct;
+  const acc = Math.round((correct/total)*100);
+
+  // Stars
+  let stars = acc >= 80 ? 3 : acc >= 60 ? 2 : acc >= 40 ? 1 : 0;
+  LEVELS[state.levelIdx].stars = Math.max(LEVELS[state.levelIdx].stars, stars);
+
+  // Trophy & title
+  const trophies = ['😢','😅','😊','🏆'];
+  const titles = ['Terus Berlatih!','Lumayan!','Bagus!','Luar Biasa!'];
+  document.getElementById('resultTrophy').textContent = trophies[stars];
+  document.getElementById('resultTitle').textContent = titles[stars];
+  document.getElementById('resultStars').textContent = '⭐'.repeat(stars) + '☆'.repeat(3-stars);
+  document.getElementById('resultScore').textContent = state.score;
+  document.getElementById('resCorrect').textContent = correct;
+  document.getElementById('resWrong').textContent = wrong;
+  document.getElementById('resAccuracy').textContent = acc + '%';
+
+  // Review
+  const reviewEl = document.getElementById('reviewItems');
+  reviewEl.innerHTML = '';
+  state.answers.forEach((a, i) => {
+    const el = document.createElement('div');
+    el.className = 'review-item';
+    el.innerHTML = `
+      <div class="review-icon">${a.correct ? '✅' : '❌'}</div>
+      <div>
+        <div style="font-weight:600;color:rgba(255,255,255,0.9)">${i+1}. ${a.q}${a.arabic ? ' — ' + a.arabic : ''}</div>
+        ${!a.correct ? `<div style="color:var(--ruby);margin-top:2px">Jawabanmu: ${a.chosen}</div><div style="color:var(--emerald)">Benar: ${a.correctAns}</div>` : ''}
+        <div style="color:var(--text-dim);margin-top:3px;font-size:11px">${a.exp}</div>
+      </div>
+    `;
+    reviewEl.appendChild(el);
+  });
+
+  show('screen-result');
+}
+
+// ========================================================
+// INIT
+// ========================================================
+buildMenu();
+</script>
+</body>
+</html>

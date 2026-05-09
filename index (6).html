@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Madani Game Education</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+   
+</head>
+
+<body>
+
+<!-- HEADER -->
+<header>
+    <div class="header-logos">
+        <img src="img/logo ps.jpeg" alt="Logo PS">
+    </div>
+    <div class="header-title">🕹️ MADANI GAME EDUCATION</div>
+    <div class="header-logos">
+        <img src="img/logo123.jpeg" alt="Logo Madani">
+    </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-inner">
+        <div class="hero-img">
+            <img src="img/logo2a.jpeg" alt="Madani Game">
+        </div>
+        <div class="hero-text">
+            <h1>Belajar Lebih Seru dengan Game Edukasi!</h1>
+            <p>Madani Game Education adalah platform permainan edukatif yang dirancang untuk membantu pengguna belajar dengan cara yang lebih menyenangkan dan interaktif.</p>
+            <p>Melalui berbagai game yang menarik, pengguna dapat meningkatkan pengetahuan, keterampilan berpikir, serta kemampuan memecahkan masalah.</p>
+            <p>Cocok digunakan oleh pelajar untuk mendukung proses belajar di luar kelas — efektif dan tidak membosankan!</p>
+        </div>
+    </div>
+</section>
+
+<!-- PARTNER LOGOS -->
+
+
+
+
+<!-- GAME LIST -->
+<section class="game-section">
+    <div class="section-header">
+        <h2>🎮 Daftar Permainan / Games Education Bimbel Madani</h2>
+        <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="Cari permainan...">
+        </div>
+    </div>
+
+    <div class="game-list" id="gameList">
+
+        <!-- ===== CARD GAME 1 ===== -->
+        <div class="game-card" data-title="hijaiyah quest tajwid">
+            <div class="game-cover">
+                <img src="img/covergame1.jpeg" alt="Hijaiyah Quest">
+                <span class="game-badge">⭐ BARU</span>
+            </div>
+            <div class="game-info">
+                <h3>HIJAIYAH QUEST — Belajar Tajwid Interaktif</h3>
+                <p class="game-meta">Game Developer: <b>Abdillah Razli Siregar</b> | 2026</p>
+                <p class="game-desc">
+                    Game edukasi berbasis kuis yang dirancang untuk membantu siswa melatih dan meningkatkan kemampuan mengenal huruf hijaiyah serta memahami dasar-dasar ilmu tajwid secara mendalam. Belajar dengan metode interaktif yang seru dan tidak membosankan!
+                </p>
+                <a href="game/index1.html" target="_blank" class="play-btn">Mainkan Sekarang</a>
+            </div>
+        </div>
+
+        <!-- ===== TAMBAH GAME BARU DI SINI ===== -->
+        <!-- Copy block .game-card di atas, ganti src img, href, judul, dan deskripsi -->
+
+        <div class="game-list" id="gameList">
+
+        <!-- ===== CARD GAME 2 ===== -->
+        <div class="game-card" data-title="Game 25 Nama Nabi">
+            <div class="game-cover">
+                <img src="img/cover modul 25 nabi.jpeg" alt="Hijaiyah Quest">
+                <span class="game-badge">⭐ BARU</span>
+            </div>
+            <div class="game-info">
+                <h3>10 Nama Malaikat — Belajar sambil bermain Mengenal 10nama Malaikat </h3>
+                <p class="game-meta">Game Developer: <b>Abdillah Razli Siregar</b> | 2026</p>
+                <p class="game-desc">
+                    Tebak Nama Malaikat adalah game edukasi berbasis web yang dibuat untuk mengenalkan nama-nama malaikat beserta tugasnya dalam ajaran Islam. Dalam permainan ini, pemain akan diberikan pertanyaan, petunjuk, atau tugas dari seorang malaikat, lalu pemain harus menebak nama malaikat yang benar.
+                    Game ini dibuat dengan konsep belajar sambil bermain agar pemain lebih mudah mengingat nama malaikat dan tugasnya dengan cara yang seru dan interaktif. Tampilan game dibuat sederhana sehingga mudah dimainkan di HP maupun komputer.
+                </p>
+                <a href="game/Game_Malaikat_Madani.html" target="_blank" class="play-btn">Mainkan Sekarang</a>
+            </div>
+        </div>
+
+
+
+
+
+
+    </div>
+
+    <div class="no-result" id="noResult">😔 Permainan tidak ditemukan. Coba kata kunci lain.</div>
+</section>
+
+
+
+
+
+
+
+
+
+<!------------------------------------------------------------------------------------------------------------->
+<!-- FOOTER -->
+<footer>
+    &copy; 2026 <b>Madani Game Education</b> — Bimbingan Belajar Private Madani, Kisaran, Sumatera Utara
+</footer>
+
+<script>
+    // Fitur pencarian game
+    const searchInput = document.getElementById('searchInput');
+    const gameList = document.getElementById('gameList');
+    const noResult = document.getElementById('noResult');
+ 
+    searchInput.addEventListener('input', function () {
+        const keyword = this.value.toLowerCase().trim();
+        const cards = gameList.querySelectorAll('.game-card');
+        let found = 0;
+ 
+        cards.forEach(card => {
+            const title = card.getAttribute('data-title') || '';
+            const text = card.innerText.toLowerCase();
+            const match = title.includes(keyword) || text.includes(keyword);
+            card.style.display = match ? 'flex' : 'none';
+            if (match) found++;
+        });
+ 
+        noResult.style.display = found === 0 ? 'block' : 'none';
+    });
+</script>
+
+</body>
+</html>
