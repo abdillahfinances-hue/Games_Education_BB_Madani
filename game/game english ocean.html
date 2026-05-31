@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>English Ocean – Kelas 5 SD (Level Sedang)</title>
+<link href="https://fonts.googleapis.com/css2?family=Righteous&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ocean:   #0a1628;
+  --deep:    #0d2444;
+  --wave:    #1a4a7a;
+  --teal:    #06b6d4;
+  --coral:   #f97316;
+  --yellow:  #fbbf24;
+  --mint:    #34d399;
+  --pink:    #f472b6;
+  --white:   #f0f9ff;
+  --muted:   #64748b;
+  --sand:    #fef3c7;
+}
+
+* { box-sizing:border-box; margin:0; padding:0; }
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: var(--ocean);
+  color: var(--white);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* === OCEAN BG === */
+body::before {
+  content:'';
+  position:fixed; inset:0; z-index:0;
+  background:
+    radial-gradient(ellipse 120% 50% at 50% 100%, rgba(6,182,212,.12) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 60% at 20% 80%, rgba(26,74,122,.5) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 80% 20%, rgba(6,182,212,.06) 0%, transparent 50%),
+    linear-gradient(180deg, #0a1628 0%, #0d2444 60%, #0f2d50 100%);
+  pointer-events:none;
+}
+
+/* bubbles */
+.bubbles { position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+.bubbles span {
+  position:absolute; bottom:-20px;
+  border-radius:50%;
+  background:rgba(6,182,212,.15);
+  border:1px solid rgba(6,182,212,.2);
+  animation: rise linear infinite;
+}
+.bubbles span:nth-child(1){width:8px;height:8px;left:8%;animation-duration:12s;animation-delay:0s;}
+.bubbles span:nth-child(2){width:14px;height:14px;left:22%;animation-duration:18s;animation-delay:4s;}
+.bubbles span:nth-child(3){width:6px;height:6px;left:40%;animation-duration:10s;animation-delay:2s;}
+.bubbles span:nth-child(4){width:10px;height:10px;left:58%;animation-duration:14s;animation-delay:7s;}
+.bubbles span:nth-child(5){width:16px;height:16px;left:72%;animation-duration:20s;animation-delay:1s;}
+.bubbles span:nth-child(6){width:7px;height:7px;left:88%;animation-duration:11s;animation-delay:5s;}
+@keyframes rise { from{bottom:-20px;opacity:.5;} to{bottom:105%;opacity:0;} }
+
+/* === HEADER === */
+header {
+  position:relative; z-index:10;
+  text-align:center;
+  padding:26px 16px 20px;
+  background:linear-gradient(180deg, rgba(6,182,212,.1) 0%, transparent 100%);
+  border-bottom:1px solid rgba(6,182,212,.2);
+}
+.fish-row { font-size:1.6rem; letter-spacing:6px; margin-bottom:6px; animation: swim 3s ease-in-out infinite alternate; }
+@keyframes swim { from{transform:translateX(-6px);} to{transform:translateX(6px);} }
+header h1 {
+  font-family:'Righteous', cursive;
+  font-size:clamp(1.6rem,5vw,2.3rem);
+  color:var(--teal);
+  text-shadow:0 0 30px rgba(6,182,212,.5), 0 2px 0 rgba(0,0,0,.3);
+  letter-spacing:2px;
+}
+.level-pill {
+  display:inline-block; margin-top:8px;
+  background:rgba(251,191,36,.15);
+  border:1px solid var(--yellow);
+  color:var(--yellow);
+  font-size:.7rem; font-weight:700;
+  letter-spacing:2px; text-transform:uppercase;
+  padding:3px 14px; border-radius:50px;
+}
+header p { color:var(--muted); font-size:.83rem; margin-top:6px; }
+
+/* === TABS === */
+.tab-bar {
+  position:sticky; top:0; z-index:50;
+  display:flex; flex-wrap:wrap; gap:6px;
+  justify-content:center;
+  padding:10px 12px;
+  background:rgba(10,22,40,.93);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(6,182,212,.15);
+}
+.tab-btn {
+  font-family:'Righteous', cursive;
+  font-size:.75rem; letter-spacing:.5px;
+  padding:7px 14px;
+  border:1px solid rgba(6,182,212,.2);
+  border-radius:50px;
+  background:rgba(13,36,68,.7);
+  color:var(--muted);
+  cursor:pointer; transition:all .2s;
+}
+.tab-btn:hover { border-color:var(--teal); color:var(--teal); }
+.tab-btn.active { background:rgba(6,182,212,.18); border-color:var(--teal); color:var(--teal); box-shadow:0 0 12px rgba(6,182,212,.2); }
+
+/* === LAYOUT === */
+.game-section { display:none; padding:18px 14px 50px; max-width:680px; margin:0 auto; position:relative; z-index:5; }
+.game-section.active { display:block; animation:waveIn .35s ease; }
+@keyframes waveIn { from{opacity:0;transform:translateY(14px);} to{opacity:1;transform:translateY(0);} }
+
+.sec-badge { font-family:'Righteous',cursive; font-size:.62rem; letter-spacing:3px; color:var(--teal); text-align:center; margin-bottom:4px; text-transform:uppercase; }
+.sec-title { font-family:'Righteous',cursive; font-size:clamp(1.1rem,3.5vw,1.5rem); text-align:center; color:var(--sand); margin-bottom:5px; }
+.sec-desc { text-align:center; color:var(--muted); font-size:.82rem; margin-bottom:16px; line-height:1.5; }
+
+/* === HUD === */
+.hud {
+  display:flex; justify-content:space-between; align-items:center;
+  background:rgba(13,36,68,.8);
+  border:1px solid rgba(6,182,212,.2);
+  border-radius:14px;
+  padding:10px 18px; margin-bottom:10px;
+}
+.hud-lbl { font-size:.6rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:1px; }
+.hud-val { font-family:'Righteous',cursive; font-size:1.25rem; color:var(--yellow); }
+.hud-hearts { font-size:1rem; letter-spacing:2px; }
+.hud-timer { font-family:'Righteous',cursive; font-size:1.25rem; color:var(--mint); }
+.hud-timer.warn { color:var(--coral); animation:blink .5s infinite alternate; }
+@keyframes blink { from{opacity:1;} to{opacity:.3;} }
+
+/* === PROGRESS === */
+.prog-wrap { height:7px; background:rgba(255,255,255,.06); border-radius:50px; margin-bottom:14px; overflow:hidden; }
+.prog-fill { height:100%; border-radius:50px; background:linear-gradient(90deg,var(--teal),var(--mint)); transition:width .4s ease; }
+
+/* === CARD === */
+.card {
+  background:rgba(13,36,68,.75);
+  border:1px solid rgba(6,182,212,.18);
+  border-radius:18px; padding:20px; margin-bottom:14px;
+  position:relative; overflow:hidden;
+  backdrop-filter:blur(6px);
+}
+.card::after {
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg,transparent,var(--teal),transparent);
+}
+
+/* === BADGES / TAGS === */
+.q-tag {
+  display:inline-block; font-size:.62rem; font-weight:700;
+  letter-spacing:1.5px; text-transform:uppercase;
+  padding:2px 10px; border-radius:20px; margin-bottom:10px;
+}
+.tag-blue  { background:rgba(6,182,212,.15); color:var(--teal); border:1px solid rgba(6,182,212,.3); }
+.tag-coral { background:rgba(249,115,22,.15); color:var(--coral); border:1px solid rgba(249,115,22,.3); }
+.tag-green { background:rgba(52,211,153,.15); color:var(--mint); border:1px solid rgba(52,211,153,.3); }
+.tag-pink  { background:rgba(244,114,182,.15); color:var(--pink); border:1px solid rgba(244,114,182,.3); }
+
+.q-ctx { font-size:.8rem; color:var(--teal); font-style:italic; margin-bottom:8px; }
+.q-text { font-size:1rem; font-weight:600; line-height:1.6; color:var(--white); }
+
+/* === OPTIONS === */
+.opt-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
+.opt-btn {
+  font-family:'Poppins',sans-serif; font-weight:600; font-size:.9rem;
+  padding:13px 10px;
+  background:rgba(10,22,40,.8);
+  border:2px solid rgba(6,182,212,.18);
+  border-radius:12px; color:var(--white);
+  cursor:pointer; transition:all .2s; text-align:center;
+}
+.opt-btn:hover { border-color:var(--teal); background:rgba(6,182,212,.1); transform:translateY(-2px); box-shadow:0 4px 12px rgba(6,182,212,.15); }
+.opt-btn.correct { border-color:var(--mint); background:rgba(52,211,153,.15); color:var(--mint); }
+.opt-btn.wrong   { border-color:var(--coral); background:rgba(249,115,22,.12); color:var(--coral); }
+.opt-btn:disabled { cursor:default; }
+
+/* === FEEDBACK === */
+.feedback { text-align:center; font-weight:700; font-size:.92rem; min-height:26px; margin-top:10px; }
+.feedback.ok { color:var(--mint); }
+.feedback.no { color:var(--coral); }
+
+/* === CHIPS === */
+.chip-wrap { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:12px; }
+.chip {
+  font-family:'Poppins',sans-serif; font-weight:600; font-size:.85rem;
+  padding:7px 14px;
+  background:rgba(6,182,212,.1);
+  border:1px solid rgba(6,182,212,.3);
+  border-radius:50px; color:var(--teal);
+  cursor:pointer; transition:all .2s;
+}
+.chip:hover { background:rgba(6,182,212,.25); transform:translateY(-2px); }
+.chip.used { opacity:.2; pointer-events:none; }
+
+/* === BUILT SENTENCE === */
+.built {
+  min-height:52px;
+  background:rgba(10,22,40,.8);
+  border:1px dashed rgba(6,182,212,.2);
+  border-radius:12px; padding:10px 14px;
+  display:flex; flex-wrap:wrap; align-items:center; gap:6px;
+  margin-bottom:12px; font-size:.9rem; font-weight:600;
+}
+.b-word {
+  background:rgba(251,191,36,.15);
+  border:1px solid rgba(251,191,36,.4);
+  color:var(--sand);
+  padding:4px 10px; border-radius:8px;
+}
+
+/* === PASSAGE === */
+.passage {
+  background:rgba(10,22,40,.7);
+  border-left:3px solid var(--yellow);
+  border-radius:0 12px 12px 0;
+  padding:14px 16px;
+  font-size:.88rem; line-height:1.75;
+  color:#b8d9f0; margin-bottom:14px;
+}
+.passage strong { color:var(--yellow); }
+
+/* === MATCH COLUMNS === */
+.match-wrapper { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0; }
+.match-col { display:flex; flex-direction:column; gap:8px; }
+.match-card {
+  padding:12px 14px;
+  background:rgba(10,22,40,.7);
+  border:2px solid rgba(6,182,212,.18);
+  border-radius:12px; font-size:.88rem; font-weight:600;
+  cursor:pointer; transition:all .2s; text-align:center;
+  color:var(--white);
+}
+.match-card.left:hover  { border-color:var(--teal); }
+.match-card.right:hover { border-color:var(--yellow); }
+.match-card.selected-left  { border-color:var(--teal); background:rgba(6,182,212,.15); color:var(--teal); }
+.match-card.selected-right { border-color:var(--yellow); background:rgba(251,191,36,.12); color:var(--yellow); }
+.match-card.matched  { border-color:var(--mint); background:rgba(52,211,153,.12); color:var(--mint); pointer-events:none; }
+.match-card.wrong-flash { border-color:var(--coral)!important; background:rgba(249,115,22,.12)!important; animation:shake .3s; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+
+/* === SPELLING BOXES === */
+.spell-boxes { display:flex; flex-wrap:wrap; justify-content:center; gap:7px; margin:14px 0; }
+.s-box {
+  width:40px; height:44px;
+  background:rgba(13,36,68,.9);
+  border:2px solid rgba(6,182,212,.25);
+  border-radius:8px;
+  font-family:'Righteous',cursive; font-size:1.2rem;
+  color:var(--teal); text-align:center; line-height:44px;
+  transition:border .2s;
+}
+.s-box.filled { border-color:var(--teal); background:rgba(6,182,212,.1); }
+.s-box.correct { border-color:var(--mint); background:rgba(52,211,153,.15); color:var(--mint); }
+.s-box.wrong   { border-color:var(--coral); background:rgba(249,115,22,.12); color:var(--coral); }
+.s-box.hint    { border-color:var(--yellow); background:rgba(251,191,36,.1); color:var(--yellow); }
+
+/* === ALPHA PAD === */
+.alpha-pad { display:flex; flex-wrap:wrap; gap:5px; justify-content:center; margin-bottom:10px; }
+.a-key {
+  font-family:'Righteous',cursive; font-size:.78rem;
+  width:32px; height:32px;
+  background:rgba(13,36,68,.9);
+  border:1px solid rgba(6,182,212,.2);
+  border-radius:6px; color:var(--teal);
+  cursor:pointer; transition:all .15s;
+  display:flex; align-items:center; justify-content:center;
+}
+.a-key:hover { background:rgba(6,182,212,.2); transform:scale(1.08); }
+.a-key.used { opacity:.2; pointer-events:none; }
+
+/* === BUTTONS === */
+.btn {
+  font-family:'Righteous',cursive; font-size:.78rem; letter-spacing:.5px;
+  padding:10px 22px; border:none; border-radius:50px;
+  cursor:pointer; transition:all .2s;
+  display:inline-flex; align-items:center; gap:6px;
+}
+.btn-teal  { background:var(--teal); color:var(--ocean); box-shadow:0 4px 0 #0891b2; }
+.btn-teal:hover  { transform:translateY(-2px); box-shadow:0 6px 0 #0891b2; }
+.btn-teal:active { transform:translateY(1px); box-shadow:0 2px 0 #0891b2; }
+.btn-coral { background:var(--coral); color:var(--ocean); box-shadow:0 4px 0 #c2410c; }
+.btn-coral:hover { transform:translateY(-2px); box-shadow:0 6px 0 #c2410c; }
+.btn-ghost { background:transparent; border:1px solid rgba(6,182,212,.25); color:var(--muted); }
+.btn-ghost:hover { border-color:var(--teal); color:var(--teal); }
+.btn-row { display:flex; justify-content:center; gap:10px; margin-top:12px; flex-wrap:wrap; }
+
+/* === RESULT === */
+.result-screen { display:none; text-align:center; padding:30px 16px; }
+.result-screen.show { display:block; animation:waveIn .4s ease; }
+.result-icon { font-size:4rem; margin-bottom:8px; }
+.result-title { font-family:'Righteous',cursive; font-size:1.5rem; color:var(--teal); margin-bottom:6px; }
+.result-sub { color:var(--muted); font-size:.9rem; margin-bottom:8px; }
+.rank-badge {
+  display:inline-block; font-family:'Righteous',cursive; font-size:1rem;
+  padding:6px 22px; border-radius:50px; margin-bottom:18px;
+}
+.rank-s { background:rgba(251,191,36,.2); color:var(--yellow); border:1px solid var(--yellow); }
+.rank-a { background:rgba(52,211,153,.15); color:var(--mint); border:1px solid var(--mint); }
+.rank-b { background:rgba(6,182,212,.15); color:var(--teal); border:1px solid var(--teal); }
+.rank-c { background:rgba(249,115,22,.12); color:var(--coral); border:1px solid var(--coral); }
+
+/* === SCORE POP === */
+.score-pop {
+  font-family:'Righteous',cursive; font-size:1.5rem; color:var(--mint);
+  position:fixed; top:38%; left:50%; transform:translateX(-50%);
+  pointer-events:none; z-index:999;
+  text-shadow:0 0 16px rgba(52,211,153,.7);
+  animation:popUp .5s ease forwards;
+}
+@keyframes popUp { 0%{opacity:1;transform:translateX(-50%) scale(.8);} 60%{opacity:1;transform:translateX(-50%) scale(1.2);} 100%{opacity:0;transform:translateX(-50%) translateY(-30px) scale(1.1);} }
+</style>
+</head>
+<body>
+
+<div class="bubbles">
+  <span></span><span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<header>
+  <div class="fish-row">🐠🐟🐡</div>
+  <h1>ENGLISH OCEAN</h1>
+  <div class="level-pill">🌊 KELAS 5 SD — LEVEL SEDANG</div>
+  <p>Jelajahi Samudra Bahasa Inggris! 🐬</p>
+</header>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="showGame(0)">🎯 PILIHAN GANDA</button>
+  <button class="tab-btn" onclick="showGame(1)">🔗 WORD MATCH</button>
+  <button class="tab-btn" onclick="showGame(2)">✍️ SUSUN KALIMAT</button>
+  <button class="tab-btn" onclick="showGame(3)">🔤 SPELLING</button>
+</div>
+
+<!-- ================================================================
+     GAME 1 — MULTIPLE CHOICE (Grammar + Vocab Level Sedang)
+     ================================================================ -->
+<div class="game-section active" id="g0">
+  <div class="sec-badge">🌊 Stage 1</div>
+  <div class="sec-title">Pilihan Ganda</div>
+  <div class="sec-desc">Pilih jawaban yang paling benar! Materi: tenses, kosakata, dan grammar dasar Kelas 5.</div>
+  <div class="hud">
+    <div><div class="hud-lbl">Skor</div><div class="hud-val" id="mc-score">0</div></div>
+    <div style="text-align:center"><div class="hud-lbl">Soal</div><div class="hud-val" id="mc-round">1/12</div></div>
+    <div style="text-align:right"><div class="hud-lbl">Nyawa</div><div class="hud-hearts" id="mc-lives">❤️❤️❤️❤️</div></div>
+  </div>
+  <div class="prog-wrap"><div class="prog-fill" id="mc-prog" style="width:0%"></div></div>
+  <div id="mc-area">
+    <div class="card">
+      <span class="q-tag" id="mc-tag">—</span>
+      <div class="q-ctx" id="mc-ctx"></div>
+      <div class="q-text" id="mc-q">—</div>
+      <div class="opt-grid" id="mc-opts"></div>
+      <div class="feedback" id="mc-fb"></div>
+    </div>
+  </div>
+  <div class="result-screen" id="mc-res">
+    <div class="result-icon" id="mc-icon">🏆</div>
+    <div class="result-title">GREAT JOB!</div>
+    <div class="result-sub" id="mc-rsub"></div>
+    <div class="rank-badge" id="mc-rank"></div>
+    <button class="btn btn-teal" onclick="initMC()">↩ MAIN LAGI</button>
+  </div>
+</div>
+
+<!-- ================================================================
+     GAME 2 — WORD MATCH (English ↔ Indonesian / Synonym)
+     ================================================================ -->
+<div class="game-section" id="g1">
+  <div class="sec-badge">🌊 Stage 2</div>
+  <div class="sec-title">Word Match</div>
+  <div class="sec-desc">Cocokkan kata di kolom kiri dengan artinya di kolom kanan. Klik dua kartu untuk mencocokkan!</div>
+  <div class="hud">
+    <div><div class="hud-lbl">Skor</div><div class="hud-val" id="wm-score">0</div></div>
+    <div style="text-align:center"><div class="hud-lbl">Tersisa</div><div class="hud-val" id="wm-left">8 pasang</div></div>
+    <div style="text-align:right"><div class="hud-lbl">Set</div><div class="hud-val" id="wm-set" style="color:var(--pink)">1/2</div></div>
+  </div>
+  <div id="wm-area">
+    <div class="card">
+      <div class="match-wrapper">
+        <div class="match-col" id="wm-left-col"></div>
+        <div class="match-col" id="wm-right-col"></div>
+      </div>
+      <div class="feedback" id="wm-fb"></div>
+    </div>
+  </div>
+  <div class="result-screen" id="wm-res">
+    <div class="result-icon" id="wm-icon">🌟</div>
+    <div class="result-title">MATCH MASTER!</div>
+    <div class="result-sub" id="wm-rsub"></div>
+    <div class="rank-badge" id="wm-rank"></div>
+    <button class="btn btn-teal" onclick="initWM()">↩ MAIN LAGI</button>
+  </div>
+</div>
+
+<!-- ================================================================
+     GAME 3 — SENTENCE BUILDER (Medium complexity)
+     ================================================================ -->
+<div class="game-section" id="g2">
+  <div class="sec-badge">🌊 Stage 3</div>
+  <div class="sec-title">Susun Kalimat</div>
+  <div class="sec-desc">Klik kata-kata untuk menyusun kalimat yang benar! Perhatikan tenses dan urutan kata.</div>
+  <div class="hud">
+    <div><div class="hud-lbl">Skor</div><div class="hud-val" id="sb-score">0</div></div>
+    <div style="text-align:center"><div class="hud-lbl">Soal</div><div class="hud-val" id="sb-round">1/8</div></div>
+    <div style="text-align:right"><div class="hud-lbl">Streak</div><div class="hud-val" id="sb-streak" style="color:var(--pink)">0🔥</div></div>
+  </div>
+  <div class="prog-wrap"><div class="prog-fill" id="sb-prog" style="width:0%"></div></div>
+  <div id="sb-area">
+    <div class="card">
+      <span class="q-tag" id="sb-type">—</span>
+      <div class="q-ctx" id="sb-ctx"></div>
+      <div class="built" id="sb-built"><span style="color:var(--muted);font-size:.83rem">Klik kata di bawah untuk mulai...</span></div>
+      <div class="chip-wrap" id="sb-chips"></div>
+      <div class="feedback" id="sb-fb"></div>
+      <div class="btn-row">
+        <button class="btn btn-teal" onclick="checkSB()">✓ CEK</button>
+        <button class="btn btn-ghost" onclick="resetSB()">↺ RESET</button>
+      </div>
+    </div>
+  </div>
+  <div class="result-screen" id="sb-res">
+    <div class="result-icon" id="sb-icon">✍️</div>
+    <div class="result-title">SENTENCE STAR!</div>
+    <div class="result-sub" id="sb-rsub"></div>
+    <div class="rank-badge" id="sb-rank"></div>
+    <button class="btn btn-teal" onclick="initSB()">↩ MAIN LAGI</button>
+  </div>
+</div>
+
+<!-- ================================================================
+     GAME 4 — SPELLING (Ketik huruf demi huruf, ada timer)
+     ================================================================ -->
+<div class="game-section" id="g3">
+  <div class="sec-badge">🌊 Stage 4</div>
+  <div class="sec-title">Spelling Challenge</div>
+  <div class="sec-desc">Baca petunjuk, lalu eja kata Bahasa Inggris yang benar! Huruf pertama sudah diberikan. ⏱️ 20 detik.</div>
+  <div class="hud">
+    <div><div class="hud-lbl">Skor</div><div class="hud-val" id="sp-score">0</div></div>
+    <div style="text-align:center"><div class="hud-lbl">Soal</div><div class="hud-val" id="sp-round">1/10</div></div>
+    <div style="text-align:right"><div class="hud-lbl">Waktu</div><div class="hud-timer" id="sp-timer">20</div></div>
+  </div>
+  <div class="prog-wrap"><div class="prog-fill" id="sp-prog" style="width:0%"></div></div>
+  <div id="sp-area">
+    <div class="card">
+      <span class="q-tag tag-blue" id="sp-tag">—</span>
+      <div class="q-ctx" id="sp-ctx"></div>
+      <div style="font-size:3.5rem;text-align:center;margin:8px 0;animation:swim 2s ease-in-out infinite alternate;" id="sp-emoji">🐠</div>
+      <div style="font-size:.9rem;color:#b8d9f0;text-align:center;margin-bottom:14px;line-height:1.5;" id="sp-clue"></div>
+      <div class="spell-boxes" id="sp-boxes"></div>
+      <div class="alpha-pad" id="sp-pad"></div>
+      <div class="feedback" id="sp-fb"></div>
+      <div class="btn-row">
+        <button class="btn btn-teal" onclick="checkSP()">✓ SUBMIT</button>
+        <button class="btn btn-ghost" onclick="clearSP()">⌫ HAPUS</button>
+        <button class="btn btn-ghost" onclick="hintSP()">💡 BANTUAN</button>
+      </div>
+    </div>
+  </div>
+  <div class="result-screen" id="sp-res">
+    <div class="result-icon">🏅</div>
+    <div class="result-title">SPELLING CHAMP!</div>
+    <div class="result-sub" id="sp-rsub"></div>
+    <div class="rank-badge" id="sp-rank"></div>
+    <button class="btn btn-coral" onclick="initSP()">↩ MAIN LAGI</button>
+  </div>
+</div>
+
+<script>
+// ============ UTILS ============
+const shuffle = a => [...a].sort(() => Math.random() - .5);
+const delay = ms => new Promise(r => setTimeout(r, ms));
+
+function showGame(i) {
+  document.querySelectorAll('.game-section').forEach((s,j) => s.classList.toggle('active', i===j));
+  document.querySelectorAll('.tab-btn').forEach((b,j) => b.classList.toggle('active', i===j));
+}
+
+function getRank(pct) {
+  if (pct >= 90) return { cls:'rank-s', txt:'🏆 S RANK — LUAR BIASA!', icon:'🏆' };
+  if (pct >= 70) return { cls:'rank-a', txt:'🌟 A RANK — HEBAT!', icon:'🌟' };
+  if (pct >= 50) return { cls:'rank-b', txt:'👍 B RANK — BAGUS!', icon:'😊' };
+  return { cls:'rank-c', txt:'💪 C RANK — TERUS SEMANGAT!', icon:'💪' };
+}
+
+function showRankResult(iconId, subId, rankId, score, max) {
+  const pct = Math.round((score / max) * 100);
+  const r = getRank(pct);
+  if (iconId) document.getElementById(iconId).textContent = r.icon;
+  document.getElementById(subId).textContent = `Skor: ${score} / ${max}  (${pct}%)`;
+  const el = document.getElementById(rankId);
+  el.className = 'rank-badge ' + r.cls;
+  el.textContent = r.txt;
+}
+
+function popScore(txt) {
+  const el = document.createElement('div');
+  el.className = 'score-pop'; el.textContent = txt;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 550);
+}
+
+// ============ GAME 1: MULTIPLE CHOICE ============
+const mcData = shuffle([
+  { tag:'tag-blue', type:'SIMPLE PRESENT', ctx:'📌 Simple Present Tense', q:'My brother ___ football every Saturday morning.', opts:['play','plays','played','playing'], ans:'plays' },
+  { tag:'tag-blue', type:'SIMPLE PAST', ctx:'📌 Simple Past Tense', q:'We ___ a movie at the cinema last weekend.', opts:['watch','watches','watched','watching'], ans:'watched' },
+  { tag:'tag-blue', type:'PRESENT CONTINUOUS', ctx:'📌 Present Continuous Tense', q:'Look! The birds ___ in the sky right now.', opts:['fly','flies','flew','are flying'], ans:'are flying' },
+  { tag:'tag-coral', type:'FUTURE TENSE', ctx:'📌 Simple Future Tense', q:'She ___ visit her grandparents next holiday.', opts:['will','is','was','did'], ans:'will' },
+  { tag:'tag-coral', type:'VOCABULARY', ctx:'📌 Kosakata: Profesi', q:'A person who takes care of sick people in a hospital is called a ___.', opts:['teacher','doctor','farmer','pilot'], ans:'doctor' },
+  { tag:'tag-coral', type:'VOCABULARY', ctx:'📌 Kosakata: Alam', q:'The ___ is the largest ocean in the world.', opts:['Atlantic','Indian','Arctic','Pacific'], ans:'Pacific' },
+  { tag:'tag-green', type:'ARTICLES', ctx:'📌 Penggunaan Articles', q:'I saw ___ owl sitting on the tree last night.', opts:['a','an','the','–'], ans:'an' },
+  { tag:'tag-green', type:'PREPOSITION', ctx:'📌 Preposisi Waktu', q:'School starts ___ 7 o\'clock every morning.', opts:['in','on','at','by'], ans:'at' },
+  { tag:'tag-green', type:'COMPARISON', ctx:'📌 Comparative Adjective', q:'An elephant is ___ than a cat.', opts:['big','bigger','biggest','most big'], ans:'bigger' },
+  { tag:'tag-pink', type:'NEGATIVE', ctx:'📌 Kalimat Negatif', q:'She ___ like eating spicy food.', opts:["don't","doesn't","didn't","isn't"], ans:"doesn't" },
+  { tag:'tag-pink', type:'QUESTION WORD', ctx:'📌 WH-Questions', q:'___ is your birthday? — It\'s on March 15th.', opts:['What','When','Where','Who'], ans:'When' },
+  { tag:'tag-pink', type:'VOCABULARY', ctx:'📌 Kosakata: Sifat/Adjective', q:'The opposite of "noisy" is ___.', opts:['loud','quiet','happy','fast'], ans:'quiet' },
+]);
+
+let mcIdx=0, mcScore=0, mcLives=4, mcLocked=false;
+
+function initMC() {
+  mcIdx=0; mcScore=0; mcLives=4; mcLocked=false;
+  document.getElementById('mc-score').textContent = 0;
+  document.getElementById('mc-res').classList.remove('show');
+  document.getElementById('mc-area').style.display = '';
+  updMCLives(); renderMC();
+}
+function updMCLives() {
+  document.getElementById('mc-lives').textContent = '❤️'.repeat(mcLives) + '🖤'.repeat(4-mcLives);
+}
+function renderMC() {
+  const d = mcData[mcIdx % mcData.length];
+  document.getElementById('mc-tag').className = 'q-tag ' + d.tag;
+  document.getElementById('mc-tag').textContent = d.type;
+  document.getElementById('mc-ctx').textContent = d.ctx;
+  document.getElementById('mc-q').textContent = d.q;
+  document.getElementById('mc-round').textContent = `${mcIdx+1}/12`;
+  document.getElementById('mc-prog').style.width = `${(mcIdx/12)*100}%`;
+  document.getElementById('mc-fb').textContent = ''; mcLocked = false;
+  const g = document.getElementById('mc-opts'); g.innerHTML = '';
+  shuffle(d.opts).forEach(o => {
+    const b = document.createElement('button'); b.className = 'opt-btn'; b.textContent = o;
+    b.onclick = () => pickMC(b, o, d.ans); g.appendChild(b);
+  });
+}
+async function pickMC(btn, chosen, ans) {
+  if (mcLocked) return; mcLocked = true;
+  const fb = document.getElementById('mc-fb');
+  if (chosen === ans) {
+    btn.classList.add('correct');
+    fb.className = 'feedback ok'; fb.textContent = '✅ Benar! +10 poin';
+    mcScore += 10; document.getElementById('mc-score').textContent = mcScore;
+    popScore('+10');
+  } else {
+    btn.classList.add('wrong');
+    document.querySelectorAll('#mc-opts .opt-btn').forEach(b => { if (b.textContent===ans) b.classList.add('correct'); });
+    fb.className = 'feedback no'; fb.textContent = `❌ Jawaban: "${ans}"`;
+    mcLives--; updMCLives();
+  }
+  await delay(1500); mcIdx++;
+  if (mcIdx >= 12 || mcLives <= 0) endMC(); else renderMC();
+}
+function endMC() {
+  document.getElementById('mc-area').style.display = 'none';
+  document.getElementById('mc-res').classList.add('show');
+  showRankResult('mc-icon', 'mc-rsub', 'mc-rank', mcScore, 120);
+}
+
+// ============ GAME 2: WORD MATCH ============
+const wmSets = [
+  [
+    { en:'Beautiful', id:'Cantik / Indah' },
+    { en:'Difficult', id:'Sulit / Susah' },
+    { en:'Healthy', id:'Sehat' },
+    { en:'Brave', id:'Berani' },
+    { en:'Clever', id:'Pandai / Cerdas' },
+    { en:'Dangerous', id:'Berbahaya' },
+    { en:'Expensive', id:'Mahal' },
+    { en:'Hungry', id:'Lapar' },
+  ],
+  [
+    { en:'Library', id:'Perpustakaan' },
+    { en:'Market', id:'Pasar' },
+    { en:'Hospital', id:'Rumah Sakit' },
+    { en:'Bridge', id:'Jembatan' },
+    { en:'Museum', id:'Museum' },
+    { en:'Airport', id:'Bandar Udara' },
+    { en:'Factory', id:'Pabrik' },
+    { en:'Harbour', id:'Pelabuhan' },
+  ]
+];
+
+let wmSetIdx=0, wmScore=0, wmTotal=0, wmMatchedCount=0;
+let wmSelectedLeft=null, wmSelectedRight=null, wmPairs=[], wmLocked=false;
+
+function initWM() {
+  wmSetIdx=0; wmScore=0; wmTotal=0; wmMatchedCount=0;
+  document.getElementById('wm-score').textContent=0;
+  document.getElementById('wm-res').classList.remove('show');
+  document.getElementById('wm-area').style.display='';
+  renderWMSet();
+}
+function renderWMSet() {
+  const set = wmSets[wmSetIdx];
+  wmMatchedCount=0; wmSelectedLeft=null; wmSelectedRight=null; wmLocked=false;
+  wmPairs = set.map(p => ({ ...p, matchedL:false, matchedR:false }));
+  document.getElementById('wm-set').textContent = `${wmSetIdx+1}/${wmSets.length}`;
+  document.getElementById('wm-left').textContent = `${wmPairs.length} pasang`;
+  document.getElementById('wm-fb').textContent = '';
+  renderWMColumns();
+}
+function renderWMColumns() {
+  const leftEl = document.getElementById('wm-left-col');
+  const rightEl = document.getElementById('wm-right-col');
+  leftEl.innerHTML = ''; rightEl.innerHTML = '';
+  const shuffledL = shuffle(wmPairs.map((p,i) => ({ ...p, idx:i })));
+  const shuffledR = shuffle(wmPairs.map((p,i) => ({ ...p, idx:i })));
+  shuffledL.forEach(p => {
+    const b = document.createElement('div');
+    b.className = 'match-card left'; b.textContent = p.en; b.dataset.idx = p.idx;
+    if (wmPairs[p.idx].matchedL) b.classList.add('matched');
+    b.onclick = () => selectLeft(b, p.idx);
+    leftEl.appendChild(b);
+  });
+  shuffledR.forEach(p => {
+    const b = document.createElement('div');
+    b.className = 'match-card right'; b.textContent = p.id; b.dataset.idx = p.idx;
+    if (wmPairs[p.idx].matchedR) b.classList.add('matched');
+    b.onclick = () => selectRight(b, p.idx);
+    rightEl.appendChild(b);
+  });
+}
+function selectLeft(btn, idx) {
+  if (wmLocked || wmPairs[idx].matchedL) return;
+  document.querySelectorAll('#wm-left-col .match-card').forEach(b => b.classList.remove('selected-left'));
+  btn.classList.add('selected-left'); wmSelectedLeft = { btn, idx };
+  checkWMPair();
+}
+function selectRight(btn, idx) {
+  if (wmLocked || wmPairs[idx].matchedR) return;
+  document.querySelectorAll('#wm-right-col .match-card').forEach(b => b.classList.remove('selected-right'));
+  btn.classList.add('selected-right'); wmSelectedRight = { btn, idx };
+  checkWMPair();
+}
+async function checkWMPair() {
+  if (!wmSelectedLeft || !wmSelectedRight) return;
+  wmLocked = true;
+  const fb = document.getElementById('wm-fb');
+  if (wmSelectedLeft.idx === wmSelectedRight.idx) {
+    wmSelectedLeft.btn.classList.remove('selected-left'); wmSelectedLeft.btn.classList.add('matched');
+    wmSelectedRight.btn.classList.remove('selected-right'); wmSelectedRight.btn.classList.add('matched');
+    wmPairs[wmSelectedLeft.idx].matchedL = true; wmPairs[wmSelectedLeft.idx].matchedR = true;
+    fb.className = 'feedback ok'; fb.textContent = '✅ Cocok! +10 poin';
+    wmScore += 10; wmMatchedCount++; wmTotal++;
+    document.getElementById('wm-score').textContent = wmScore;
+    document.getElementById('wm-left').textContent = `${wmPairs.length - wmMatchedCount} pasang`;
+    popScore('+10');
+    if (wmMatchedCount >= wmPairs.length) {
+      await delay(700);
+      wmSetIdx++;
+      if (wmSetIdx >= wmSets.length) endWM();
+      else { fb.textContent = '🎉 Set selesai! Lanjut...'; await delay(1000); renderWMSet(); }
+    }
+  } else {
+    wmSelectedLeft.btn.classList.add('wrong-flash'); wmSelectedRight.btn.classList.add('wrong-flash');
+    fb.className = 'feedback no'; fb.textContent = '❌ Belum cocok, coba lagi!';
+    await delay(600);
+    wmSelectedLeft.btn.classList.remove('wrong-flash','selected-left');
+    wmSelectedRight.btn.classList.remove('wrong-flash','selected-right');
+  }
+  wmSelectedLeft = null; wmSelectedRight = null; wmLocked = false;
+}
+function endWM() {
+  document.getElementById('wm-area').style.display = 'none';
+  document.getElementById('wm-res').classList.add('show');
+  const max = wmSets.reduce((a,s) => a + s.length*10, 0);
+  showRankResult('wm-icon', 'wm-rsub', 'wm-rank', wmScore, max);
+}
+
+// ============ GAME 3: SENTENCE BUILDER ============
+const sbData = [
+  { type:'SIMPLE PRESENT', ctx:'💬 Arti: "Ayahku pergi bekerja setiap hari."', words:['My','father','goes','to','work','every','day'], ans:'My father goes to work every day' },
+  { type:'SIMPLE PAST', ctx:'💬 Arti: "Kami bermain bola kemarin sore."', words:['We','played','football','yesterday','afternoon'], ans:'We played football yesterday afternoon' },
+  { type:'PRESENT CONTINUOUS', ctx:'💬 Arti: "Adik saya sedang tidur sekarang."', words:['My','sister','is','sleeping','right','now'], ans:'My sister is sleeping right now' },
+  { type:'FUTURE TENSE', ctx:'💬 Arti: "Besok kami akan pergi ke pantai."', words:['Tomorrow','we','will','go','to','the','beach'], ans:'Tomorrow we will go to the beach' },
+  { type:'NEGATIVE SENTENCE', ctx:'💬 Arti: "Mereka tidak suka makan sayuran."', words:['They','do','not','like','eating','vegetables'], ans:'They do not like eating vegetables' },
+  { type:'WH-QUESTION', ctx:'💬 Arti: "Di mana kamu membeli tas itu?"', words:['Where','did','you','buy','that','bag','?'], ans:'Where did you buy that bag ?' },
+  { type:'COMPARISON', ctx:'💬 Arti: "Gunung ini lebih tinggi dari gunung itu."', words:['This','mountain','is','taller','than','that','one'], ans:'This mountain is taller than that one' },
+  { type:'SIMPLE PAST', ctx:'💬 Arti: "Dia menulis surat untuk temannya minggu lalu."', words:['She','wrote','a','letter','to','her','friend','last','week'], ans:'She wrote a letter to her friend last week' },
+];
+
+let sbIdx=0, sbScore=0, sbStreak=0, sbChosen=[];
+
+function initSB() {
+  sbIdx=0; sbScore=0; sbStreak=0; sbChosen=[];
+  document.getElementById('sb-score').textContent=0;
+  document.getElementById('sb-streak').textContent='0🔥';
+  document.getElementById('sb-res').classList.remove('show');
+  document.getElementById('sb-area').style.display='';
+  renderSB();
+}
+function renderSB() {
+  const d = sbData[sbIdx]; sbChosen=[];
+  document.getElementById('sb-type').textContent = d.type;
+  document.getElementById('sb-ctx').textContent = d.ctx;
+  document.getElementById('sb-round').textContent = `${sbIdx+1}/${sbData.length}`;
+  document.getElementById('sb-prog').style.width = `${(sbIdx/sbData.length)*100}%`;
+  document.getElementById('sb-fb').textContent = '';
+  renderBuilt(); renderSBChips(shuffle(d.words.map((w,i) => ({w, i:String(i)}))));
+}
+function renderBuilt() {
+  const el = document.getElementById('sb-built');
+  if (!sbChosen.length) { el.innerHTML='<span style="color:var(--muted);font-size:.83rem">Klik kata di bawah untuk mulai...</span>'; return; }
+  el.innerHTML = sbChosen.map(x => `<span class="b-word">${x.w}</span>`).join('');
+}
+function renderSBChips(items) {
+  const el = document.getElementById('sb-chips'); el.innerHTML='';
+  items.forEach(item => {
+    const b = document.createElement('button'); b.className='chip';
+    b.textContent=item.w; b.dataset.key=item.i;
+    if (sbChosen.some(x=>x.key===item.i)) b.classList.add('used');
+    b.onclick = () => {
+      if (!sbChosen.some(x=>x.key===item.i)) { sbChosen.push(item); b.classList.add('used'); renderBuilt(); }
+    };
+    el.appendChild(b);
+  });
+}
+function resetSB() {
+  sbChosen=[];
+  renderBuilt();
+  document.querySelectorAll('#sb-chips .chip').forEach(b => b.classList.remove('used'));
+  document.getElementById('sb-fb').textContent='';
+}
+async function checkSB() {
+  const d = sbData[sbIdx];
+  const ans = sbChosen.map(x=>x.w).join(' ');
+  const fb = document.getElementById('sb-fb');
+  if (ans === d.ans) {
+    sbStreak++;
+    const pts = sbStreak >= 3 ? 20 : 12;
+    fb.className='feedback ok'; fb.textContent=`✅ Benar! +${pts} poin${sbStreak>=3?' 🔥':''}`; 
+    sbScore+=pts;
+    popScore(`+${pts}${sbStreak>=3?' 🔥':''}`);
+  } else {
+    fb.className='feedback no'; fb.textContent=`❌ Jawaban: "${d.ans}"`; sbStreak=0;
+  }
+  document.getElementById('sb-score').textContent=sbScore;
+  document.getElementById('sb-streak').textContent=sbStreak+'🔥';
+  await delay(1900); sbIdx++;
+  if (sbIdx>=sbData.length) endSB(); else renderSB();
+}
+function endSB() {
+  document.getElementById('sb-area').style.display='none';
+  document.getElementById('sb-res').classList.add('show');
+  const max = sbData.length * 12;
+  const pct = Math.round((sbScore/max)*100);
+  const r = getRank(pct);
+  document.getElementById('sb-icon').textContent = r.icon;
+  document.getElementById('sb-rsub').textContent = `Skor: ${sbScore}  (${pct}%)`;
+  const el=document.getElementById('sb-rank'); el.className='rank-badge '+r.cls; el.textContent=r.txt;
+}
+
+// ============ GAME 4: SPELLING ============
+const spData = shuffle([
+  { emoji:'🦋', cat:'ANIMALS', ctx:'Kategori: Hewan', clue:'Serangga cantik yang bisa terbang dengan sayap berwarna-warni.', ans:'BUTTERFLY' },
+  { emoji:'🏊', cat:'ACTIVITY', ctx:'Kategori: Aktivitas', clue:'Kegiatan bergerak di dalam air menggunakan tangan dan kaki.', ans:'SWIMMING' },
+  { emoji:'📚', cat:'SCHOOL', ctx:'Kategori: Sekolah', clue:'Tempat menyimpan dan meminjam buku.', ans:'LIBRARY' },
+  { emoji:'🌋', cat:'NATURE', ctx:'Kategori: Alam', clue:'Gunung yang bisa mengeluarkan lava panas.', ans:'VOLCANO' },
+  { emoji:'🌈', cat:'NATURE', ctx:'Kategori: Alam', clue:'Lengkungan warna-warni yang muncul setelah hujan.', ans:'RAINBOW' },
+  { emoji:'🏥', cat:'PLACES', ctx:'Kategori: Tempat', clue:'Tempat orang sakit dirawat dan diobati oleh dokter.', ans:'HOSPITAL' },
+  { emoji:'🦁', cat:'ANIMALS', ctx:'Kategori: Hewan', clue:'Hewan besar bersurai yang disebut raja hutan.', ans:'LION' },
+  { emoji:'🧲', cat:'SCIENCE', ctx:'Kategori: Sains', clue:'Benda yang bisa menarik logam.', ans:'MAGNET' },
+  { emoji:'🌍', cat:'GEOGRAPHY', ctx:'Kategori: Geografi', clue:'Benua terbesar di dunia yang terdiri dari banyak negara.', ans:'CONTINENT' },
+  { emoji:'🎵', cat:'ART', ctx:'Kategori: Seni', clue:'Bunyi-bunyi yang tersusun menjadi sebuah lagu yang indah.', ans:'MUSIC' },
+]);
+
+let spIdx=0, spScore=0, spTimer=null, spSec=20, spLocked=false, spTyped=[], spHintUsed=false;
+
+function initSP() {
+  spIdx=0; spScore=0; spLocked=false;
+  document.getElementById('sp-score').textContent=0;
+  document.getElementById('sp-res').classList.remove('show');
+  document.getElementById('sp-area').style.display='';
+  clearInterval(spTimer); renderSP();
+}
+function renderSP() {
+  clearInterval(spTimer);
+  const d = spData[spIdx]; spTyped=[]; spLocked=false; spHintUsed=false;
+  document.getElementById('sp-tag').textContent = d.cat;
+  document.getElementById('sp-ctx').textContent = '📌 ' + d.ctx;
+  document.getElementById('sp-emoji').textContent = d.emoji;
+  document.getElementById('sp-clue').textContent = '💬 ' + d.clue;
+  document.getElementById('sp-round').textContent = `${spIdx+1}/${spData.length}`;
+  document.getElementById('sp-prog').style.width = `${(spIdx/spData.length)*100}%`;
+  document.getElementById('sp-fb').textContent = '';
+  renderSPBoxes(d.ans.length, d.ans[0]);
+  buildAlphaPad();
+  spSec=20; updSPTimer();
+  spTimer = setInterval(() => {
+    spSec--; updSPTimer();
+    if (spSec <= 0) { clearInterval(spTimer); timeoutSP(d.ans); }
+  }, 1000);
+}
+function updSPTimer() {
+  const el = document.getElementById('sp-timer');
+  el.textContent = spSec;
+  el.className = 'hud-timer' + (spSec<=5?' warn':'');
+}
+function renderSPBoxes(len, firstLetter) {
+  const el = document.getElementById('sp-boxes'); el.innerHTML='';
+  for (let i=0; i<len; i++) {
+    const b = document.createElement('div');
+    b.className = 's-box' + (i===0?' hint':'');
+    b.id = `spb${i}`;
+    b.textContent = i===0 ? firstLetter : '_';
+    el.appendChild(b);
+  }
+}
+function buildAlphaPad() {
+  const el = document.getElementById('sp-pad'); el.innerHTML='';
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(ch => {
+    const b = document.createElement('div'); b.className='a-key'; b.textContent=ch;
+    b.onclick = () => tapSP(ch); el.appendChild(b);
+  });
+}
+function tapSP(ch) {
+  if (spLocked) return;
+  const d = spData[spIdx];
+  if (spTyped.length >= d.ans.length - 1) return; // -1 because first is given
+  spTyped.push(ch);
+  updateSPDisplay();
+}
+function updateSPDisplay() {
+  const d = spData[spIdx];
+  for (let i=1; i<d.ans.length; i++) {
+    const b = document.getElementById(`spb${i}`);
+    const typed = spTyped[i-1];
+    b.textContent = typed || '_';
+    b.className = 's-box' + (typed?' filled':'');
+  }
+}
+function clearSP() {
+  if (spLocked) return; spTyped=[];
+  const d = spData[spIdx];
+  for (let i=1; i<d.ans.length; i++) {
+    const b = document.getElementById(`spb${i}`);
+    b.textContent='_'; b.className='s-box';
+  }
+}
+function hintSP() {
+  if (spLocked || spHintUsed) return; spHintUsed=true;
+  const d = spData[spIdx];
+  // reveal last letter
+  const lastBox = document.getElementById(`spb${d.ans.length-1}`);
+  lastBox.textContent = d.ans[d.ans.length-1];
+  lastBox.className = 's-box hint';
+  document.getElementById('sp-fb').className='feedback ok';
+  document.getElementById('sp-fb').textContent='💡 Huruf terakhir ditampilkan (-3 poin)';
+}
+async function checkSP() {
+  if (spLocked) return; spLocked=true; clearInterval(spTimer);
+  const d = spData[spIdx];
+  const typed = d.ans[0] + spTyped.join('');
+  const fb = document.getElementById('sp-fb');
+  for (let i=0; i<d.ans.length; i++) {
+    const b = document.getElementById(`spb${i}`);
+    b.className = 's-box ' + (typed[i]===d.ans[i]?'correct':'wrong');
+  }
+  if (typed === d.ans) {
+    const pts = Math.max(3, (spHintUsed?5:8) + Math.floor(spSec/4));
+    fb.className='feedback ok'; fb.textContent=`✅ Benar! +${pts} poin`;
+    spScore+=pts; document.getElementById('sp-score').textContent=spScore;
+    popScore(`+${pts}`);
+  } else {
+    fb.className='feedback no'; fb.textContent=`❌ Jawaban: ${d.ans}`;
+    // show correct letters
+    for (let i=1; i<d.ans.length; i++) {
+      document.getElementById(`spb${i}`).textContent = d.ans[i];
+    }
+  }
+  await delay(1800); spIdx++;
+  if (spIdx>=spData.length) endSP(); else renderSP();
+}
+async function timeoutSP(ans) {
+  if (spLocked) return; spLocked=true;
+  const fb = document.getElementById('sp-fb');
+  fb.className='feedback no'; fb.textContent=`⏰ Waktu habis! Jawaban: ${ans}`;
+  for (let i=1; i<ans.length; i++) {
+    const b=document.getElementById(`spb${i}`); b.textContent=ans[i]; b.className='s-box wrong';
+  }
+  await delay(1600); spIdx++;
+  if (spIdx>=spData.length) endSP(); else renderSP();
+}
+function endSP() {
+  clearInterval(spTimer);
+  document.getElementById('sp-area').style.display='none';
+  document.getElementById('sp-res').classList.add('show');
+  const max=spData.length*8;
+  const pct=Math.round((spScore/max)*100);
+  const r=getRank(pct);
+  document.getElementById('sp-rsub').textContent=`Skor: ${spScore}  (${pct}%)`;
+  const el=document.getElementById('sp-rank'); el.className='rank-badge '+r.cls; el.textContent=r.txt;
+}
+
+// ============ INIT ALL ============
+initMC(); initWM(); initSB(); initSP();
+</script>
+</body>
+</html>

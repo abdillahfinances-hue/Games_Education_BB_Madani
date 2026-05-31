@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Logika Baris 🧠</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #07090F;
+  --bg2:      #0E1220;
+  --bg3:      #141928;
+  --card:     #1A2235;
+  --card2:    #202C42;
+  --gold:     #F0B429;
+  --gold2:    #FFD97D;
+  --gold-dim: #8C6A1A;
+  --teal:     #00C9A7;
+  --teal-dim: #006E5C;
+  --red:      #FF5757;
+  --red-dim:  #7A1F1F;
+  --blue:     #5B9BF0;
+  --purple:   #B57BFF;
+  --text:     #E8EEFF;
+  --dim:      #6B7DA8;
+  --border:   rgba(255,255,255,0.06);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Animated background grid */
+body::before {
+  content:'';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(240,180,41,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(240,180,41,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Glow blobs */
+.blob {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: 0;
+}
+.blob-1 { width:400px; height:400px; background:var(--gold); top:-100px; left:-100px; }
+.blob-2 { width:350px; height:350px; background:var(--teal); bottom:-80px; right:-80px; }
+.blob-3 { width:250px; height:250px; background:var(--purple); top:50%; left:50%; transform:translate(-50%,-50%); opacity:0.06; }
+
+.wrap {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 20px 16px 60px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── HEADER ─── */
+.header {
+  text-align: center;
+  padding: 28px 0 18px;
+}
+
+.game-title {
+  font-size: 2.4rem;
+  font-weight: 900;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+
+.gt-white { color: var(--text); }
+.gt-gold  { color: var(--gold); }
+
+.game-tagline {
+  font-size: 0.78rem;
+  color: var(--dim);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+
+/* ─── TOPBAR ─── */
+.topbar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 14px 0;
+}
+
+.stat-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 8px;
+  text-align: center;
+}
+
+.stat-label {
+  font-size: 0.6rem;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+}
+
+.stat-val {
+  font-size: 1.5rem;
+  font-weight: 900;
+  line-height: 1.2;
+  margin-top: 2px;
+}
+
+.v-gold   { color: var(--gold); }
+.v-teal   { color: var(--teal); }
+.v-red    { color: var(--red); }
+.v-blue   { color: var(--blue); }
+
+/* ─── PROGRESS ─── */
+.progress-wrap {
+  background: var(--bg3);
+  border-radius: 99px;
+  height: 6px;
+  margin-bottom: 18px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+  border-radius: 99px;
+  transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ─── LEVEL TABS ─── */
+.level-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.ltab {
+  flex: 1;
+  padding: 8px 4px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  color: var(--dim);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+
+.ltab.active-lv1 { border-color: var(--teal); color: var(--teal); background: rgba(0,201,167,0.1); }
+.ltab.active-lv2 { border-color: var(--blue); color: var(--blue); background: rgba(91,155,240,0.1); }
+.ltab.active-lv3 { border-color: var(--gold); color: var(--gold); background: rgba(240,180,41,0.1); }
+.ltab.active-lv4 { border-color: var(--red);  color: var(--red);  background: rgba(255,87,87,0.1); }
+.ltab:hover:not([class*="active"]) { border-color: var(--dim); color: var(--text); }
+
+/* ─── GAME CARD ─── */
+.game-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 28px 24px 24px;
+  position: relative;
+  overflow: hidden;
+  min-height: 420px;
+}
+
+.game-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at top right, rgba(240,180,41,0.05), transparent 60%);
+  pointer-events: none;
+}
+
+/* Question header */
+.q-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--dim);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.q-badge .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  animation: blink 1.2s infinite;
+}
+
+@keyframes blink {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+/* LOGIC DISPLAY */
+.logic-box {
+  background: var(--bg2);
+  border: 1px solid rgba(240,180,41,0.12);
+  border-radius: 16px;
+  padding: 20px 16px;
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+/* IF → THEN layout */
+.ifthen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ifthen-part {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.if-tag {
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: var(--teal);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: rgba(0,201,167,0.1);
+  border: 1px solid rgba(0,201,167,0.2);
+  border-radius: 6px;
+  padding: 2px 8px;
+}
+
+.then-tag {
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: var(--gold);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: rgba(240,180,41,0.1);
+  border: 1px solid rgba(240,180,41,0.25);
+  border-radius: 6px;
+  padding: 2px 8px;
+}
+
+.q-tag {
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: var(--purple);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: rgba(181,123,255,0.1);
+  border: 1px solid rgba(181,123,255,0.25);
+  border-radius: 6px;
+  padding: 2px 8px;
+}
+
+.arabic-char {
+  font-family: 'Amiri', serif;
+  font-size: 4rem;
+  line-height: 1.3;
+  color: var(--text);
+  text-shadow: 0 0 20px rgba(240,180,41,0.25);
+}
+
+.arabic-char.big { font-size: 4.5rem; }
+.arabic-char.med { font-size: 3.5rem; }
+
+.char-label {
+  font-size: 0.68rem;
+  color: var(--dim);
+  font-weight: 700;
+  margin-top: -4px;
+}
+
+.arrow-sym {
+  font-size: 1.6rem;
+  color: var(--dim);
+  align-self: center;
+}
+
+.plus-sym {
+  font-size: 1.8rem;
+  color: var(--dim);
+  align-self: center;
+  font-weight: 900;
+}
+
+.eq-sym {
+  font-size: 1.4rem;
+  color: var(--gold);
+  align-self: center;
+  font-weight: 900;
+  padding: 0 4px;
+}
+
+/* Read result */
+.read-result {
+  display: inline-block;
+  background: rgba(240,180,41,0.1);
+  border: 1.5px solid rgba(240,180,41,0.3);
+  border-radius: 12px;
+  padding: 10px 24px;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--gold2);
+  letter-spacing: 2px;
+  margin-top: 6px;
+}
+
+.blank-answer {
+  display: inline-block;
+  background: rgba(181,123,255,0.07);
+  border: 2px dashed rgba(181,123,255,0.4);
+  border-radius: 12px;
+  padding: 10px 32px;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--purple);
+  letter-spacing: 2px;
+  min-width: 100px;
+  animation: glow-q 1.5s infinite;
+}
+
+@keyframes glow-q {
+  0%,100% { box-shadow: 0 0 0 0 rgba(181,123,255,0); }
+  50%      { box-shadow: 0 0 16px 4px rgba(181,123,255,0.15); }
+}
+
+/* Question text */
+.q-text {
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--text);
+  margin-bottom: 18px;
+  line-height: 1.5;
+}
+
+.q-text em {
+  color: var(--gold);
+  font-style: normal;
+}
+
+/* ─── ANSWER OPTIONS ─── */
+.opts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.opt-btn {
+  background: var(--bg3);
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 12px;
+  cursor: pointer;
+  transition: all 0.18s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
+}
+
+.opt-arabic {
+  font-family: 'Amiri', serif;
+  font-size: 2.2rem;
+  color: var(--gold);
+  line-height: 1;
+  min-width: 48px;
+  text-align: center;
+}
+
+.opt-info { flex: 1; }
+
+.opt-main {
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.opt-sub {
+  font-size: 0.68rem;
+  color: var(--dim);
+  margin-top: 2px;
+  line-height: 1.3;
+}
+
+.opt-btn:hover:not(:disabled) {
+  border-color: var(--gold-dim);
+  background: rgba(240,180,41,0.06);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+.opt-btn.correct {
+  border-color: var(--teal);
+  background: rgba(0,201,167,0.1);
+  animation: pop 0.35s ease;
+}
+
+.opt-btn.wrong {
+  border-color: var(--red);
+  background: rgba(255,87,87,0.08);
+  animation: shake 0.35s ease;
+}
+
+.opt-btn.show-correct {
+  border-color: var(--teal);
+  background: rgba(0,201,167,0.07);
+}
+
+.opt-btn:disabled { cursor: default; opacity: 0.9; }
+
+@keyframes pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20%      { transform: translateX(-8px); }
+  60%      { transform: translateX(8px); }
+}
+
+/* ─── FEEDBACK ─── */
+.feedback-box {
+  margin-top: 14px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1.5;
+  display: none;
+}
+
+.feedback-box.correct {
+  background: rgba(0,201,167,0.1);
+  border: 1px solid rgba(0,201,167,0.25);
+  color: var(--teal);
+  display: block;
+}
+
+.feedback-box.wrong {
+  background: rgba(255,87,87,0.08);
+  border: 1px solid rgba(255,87,87,0.2);
+  color: var(--red);
+  display: block;
+}
+
+.rumus-box {
+  background: rgba(240,180,41,0.07);
+  border: 1px solid rgba(240,180,41,0.18);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 0.78rem;
+  color: var(--gold);
+  font-weight: 700;
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+/* ─── NEXT BTN ─── */
+.next-btn {
+  width: 100%;
+  margin-top: 14px;
+  padding: 15px;
+  background: linear-gradient(135deg, #C8862A, var(--gold), #FFD97D);
+  color: #0A0900;
+  border: none;
+  border-radius: 14px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  font-weight: 900;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: transform 0.15s, opacity 0.15s;
+  display: none;
+}
+
+.next-btn:hover { transform: translateY(-2px); opacity: 0.92; }
+
+/* ─── GAME OVER ─── */
+.gameover-panel {
+  text-align: center;
+  padding: 30px 10px;
+}
+
+.go-emoji { font-size: 4rem; line-height: 1; margin-bottom: 8px; }
+.go-title { font-size: 2rem; font-weight: 900; color: var(--gold); margin-bottom: 4px; }
+.go-score { font-size: 4rem; font-weight: 900; color: var(--gold2); line-height: 1; }
+.go-sub   { font-size: 0.85rem; color: var(--dim); margin: 8px 0 6px; }
+.go-msg   { font-size: 0.95rem; font-weight: 700; color: var(--teal); margin-bottom: 24px; }
+
+.go-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 16px 0 24px;
+}
+
+.go-stat {
+  background: var(--bg3);
+  border-radius: 12px;
+  padding: 12px 8px;
+  border: 1px solid var(--border);
+}
+
+.go-stat-val { font-size: 1.5rem; font-weight: 900; color: var(--gold); }
+.go-stat-lbl { font-size: 0.65rem; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; }
+
+.btn-restart {
+  padding: 14px 44px;
+  background: linear-gradient(135deg, var(--gold-dim), var(--gold));
+  color: #0A0900;
+  border: none;
+  border-radius: 14px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 0.15s;
+  margin: 4px;
+}
+
+.btn-restart:hover { transform: scale(1.04); }
+.btn-secondary {
+  padding: 14px 24px;
+  background: var(--bg3);
+  color: var(--dim);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin: 4px;
+}
+.btn-secondary:hover { color: var(--text); border-color: var(--dim); }
+
+/* Hearts */
+.hearts-row { display: flex; gap: 3px; justify-content: center; }
+.hrt { font-size: 1rem; transition: all 0.3s; }
+.hrt.dead { filter: grayscale(1); opacity: 0.25; }
+
+/* Streak fire */
+.streak-val { display: flex; align-items: center; justify-content: center; gap: 2px; }
+
+/* Combo flash */
+@keyframes combo-flash {
+  0%   { opacity: 1; transform: scale(1.5); }
+  100% { opacity: 0; transform: scale(0.8) translateY(-30px); }
+}
+
+.combo-toast {
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--gold);
+  text-shadow: 0 0 20px rgba(240,180,41,0.6);
+  pointer-events: none;
+  z-index: 999;
+  animation: combo-flash 0.8s ease forwards;
+}
+
+/* Responsive */
+@media (max-width:520px) {
+  .arabic-char { font-size: 3rem; }
+  .arabic-char.big { font-size: 3.5rem; }
+  .opts-grid { grid-template-columns: 1fr; }
+  .game-title { font-size: 1.8rem; }
+  .topbar { grid-template-columns: repeat(2,1fr); }
+}
+</style>
+</head>
+<body>
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="game-title">
+      <span class="gt-white">Logika</span>
+      <span class="gt-gold"> Baris 🧠</span>
+    </div>
+    <div class="game-tagline">Jika baris ini + huruf ini → dibaca apa?</div>
+  </div>
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="stat-box">
+      <div class="stat-label">Skor</div>
+      <div class="stat-val v-gold" id="s-score">0</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Nyawa</div>
+      <div class="hearts-row" id="s-lives">❤️❤️❤️</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Soal</div>
+      <div class="stat-val v-blue" id="s-qnum">1/30</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Streak</div>
+      <div class="stat-val v-teal streak-val" id="s-streak">🔥 0</div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap">
+    <div class="progress-bar" id="prog" style="width:0%"></div>
+  </div>
+
+  <!-- LEVEL TABS -->
+  <div class="level-tabs">
+    <button class="ltab active-lv1" id="tab-1" onclick="setLevel(1)">⭐ Dasar</button>
+    <button class="ltab" id="tab-2" onclick="setLevel(2)">⚡ Menengah</button>
+    <button class="ltab" id="tab-3" onclick="setLevel(3)">🔥 Lanjut</button>
+    <button class="ltab" id="tab-4" onclick="setLevel(4)">💎 Master</button>
+  </div>
+
+  <!-- GAME CARD -->
+  <div class="game-card" id="game-card">
+    <div id="game-inner"></div>
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// DATA MASTER
+// ═══════════════════════════════════════════════
+
+const HURUF = [
+  { ar:'ب', nama:'Ba',   latin:'b' },
+  { ar:'ت', nama:'Ta',   latin:'t' },
+  { ar:'ث', nama:'Tsa',  latin:'ts' },
+  { ar:'ج', nama:'Jim',  latin:'j' },
+  { ar:'ح', nama:'Ha',   latin:'h' },
+  { ar:'خ', nama:'Kha',  latin:'kh' },
+  { ar:'د', nama:'Dal',  latin:'d' },
+  { ar:'ذ', nama:'Dzal', latin:'dz' },
+  { ar:'ر', nama:'Ra',   latin:'r' },
+  { ar:'ز', nama:'Zai',  latin:'z' },
+  { ar:'س', nama:'Sin',  latin:'s' },
+  { ar:'ش', nama:'Syin', latin:'sy' },
+  { ar:'ص', nama:'Shod', latin:'sh' },
+  { ar:'ض', nama:'Dhod', latin:'dh' },
+  { ar:'ط', nama:'Tho',  latin:'th' },
+  { ar:'ظ', nama:'Zho',  latin:'zh' },
+  { ar:'ع', nama:'Ain',  latin:"'" },
+  { ar:'غ', nama:'Ghain',latin:'gh' },
+  { ar:'ف', nama:'Fa',   latin:'f' },
+  { ar:'ق', nama:'Qof',  latin:'q' },
+  { ar:'ك', nama:'Kaf',  latin:'k' },
+  { ar:'ل', nama:'Lam',  latin:'l' },
+  { ar:'م', nama:'Mim',  latin:'m' },
+  { ar:'ن', nama:'Nun',  latin:'n' },
+  { ar:'و', nama:'Waw',  latin:'w' },
+  { ar:'ه', nama:'Ha',   latin:'h' },
+  { ar:'ي', nama:'Ya',   latin:'y' },
+];
+
+const HARAKAT = [
+  { mark:'َ',  kode:'fathah',     nama:'Fathah',    bunyi:'a',   ket:'baris atas',     tanwin:false },
+  { mark:'ِ',  kode:'kasrah',     nama:'Kasrah',    bunyi:'i',   ket:'baris bawah',    tanwin:false },
+  { mark:'ُ',  kode:'dammah',     nama:'Dammah',    bunyi:'u',   ket:'baris depan',    tanwin:false },
+  { mark:'ً',  kode:'fathahtain', nama:'Fathatain', bunyi:'an',  ket:'tanwin fathah',  tanwin:true  },
+  { mark:'ٍ',  kode:'kasrahtain', nama:'Kasratain', bunyi:'in',  ket:'tanwin kasrah',  tanwin:true  },
+  { mark:'ٌ',  kode:'dammahtain', nama:'Dammatain', bunyi:'un',  ket:'tanwin dammah',  tanwin:true  },
+  { mark:'ْ',  kode:'sukun',      nama:'Sukun',     bunyi:'',    ket:'baris mati',     tanwin:false },
+  { mark:'ّ',  kode:'syaddah',    nama:'Syaddah',   bunyi:'ganda',ket:'baris tasydid',tanwin:false },
+];
+
+// ─── 30 SOAL LOGIKA BARIS ───
+// Format: { tipe, ...data, poin, rumus, penjelasan }
+
+function buildAllSoal() {
+  const pool = [];
+
+  // TIPE 1: Harakat + Huruf = bunyi apa?
+  // "Jika بً + ب maka dibaca...?"
+  const t1data = [
+    // Fathatain + huruf → bunyinya
+    { h:'ب', hNama:'Ba',  baris:'ً', barisNama:'Fathatain', jawaban:'ban',  salah:['ba','bin','bun'],  level:1 },
+    { h:'ن', hNama:'Nun', baris:'ً', barisNama:'Fathatain', jawaban:'nan',  salah:['na','nin','nun'],  level:1 },
+    { h:'م', hNama:'Mim', baris:'ً', barisNama:'Fathatain', jawaban:'man',  salah:['ma','min','mun'],  level:1 },
+    { h:'ك', hNama:'Kaf', baris:'ً', barisNama:'Fathatain', jawaban:'kan',  salah:['ka','kin','kun'],  level:1 },
+    // Kasratain
+    { h:'ب', hNama:'Ba',  baris:'ٍ', barisNama:'Kasratain', jawaban:'bin',  salah:['ba','ban','bun'],  level:1 },
+    { h:'ر', hNama:'Ra',  baris:'ٍ', barisNama:'Kasratain', jawaban:'rin',  salah:['ra','ran','run'],  level:1 },
+    { h:'ل', hNama:'Lam', baris:'ٍ', barisNama:'Kasratain', jawaban:'lin',  salah:['la','lan','lun'],  level:1 },
+    // Dammatain
+    { h:'ب', hNama:'Ba',  baris:'ٌ', barisNama:'Dammatain', jawaban:'bun',  salah:['ba','ban','bin'],  level:1 },
+    { h:'ت', hNama:'Ta',  baris:'ٌ', barisNama:'Dammatain', jawaban:'tun',  salah:['ta','tan','tin'],  level:1 },
+    { h:'س', hNama:'Sin', baris:'ٌ', barisNama:'Dammatain', jawaban:'sun',  salah:['sa','san','sin'],  level:1 },
+    // Fathah
+    { h:'ب', hNama:'Ba',  baris:'َ', barisNama:'Fathah',    jawaban:'ba',   salah:['bi','bu','ban'],   level:1 },
+    { h:'ج', hNama:'Jim', baris:'َ', barisNama:'Fathah',    jawaban:'ja',   salah:['ji','ju','jan'],   level:1 },
+    // Kasrah
+    { h:'ب', hNama:'Ba',  baris:'ِ', barisNama:'Kasrah',    jawaban:'bi',   salah:['ba','bu','bin'],   level:1 },
+    { h:'ف', hNama:'Fa',  baris:'ِ', barisNama:'Kasrah',    jawaban:'fi',   salah:['fa','fu','fin'],   level:1 },
+    // Dammah
+    { h:'ب', hNama:'Ba',  baris:'ُ', barisNama:'Dammah',    jawaban:'bu',   salah:['ba','bi','bun'],   level:1 },
+    { h:'ق', hNama:'Qof', baris:'ُ', barisNama:'Dammah',    jawaban:'qu',   salah:['qa','qi','qun'],   level:1 },
+    // Sukun
+    { h:'ب', hNama:'Ba',  baris:'ْ', barisNama:'Sukun',     jawaban:'b (mati)', salah:['ba','bi','ban'], level:2 },
+    { h:'ن', hNama:'Nun', baris:'ْ', barisNama:'Sukun',     jawaban:'n (mati)', salah:['na','ni','nan'], level:2 },
+    { h:'م', hNama:'Mim', baris:'ْ', barisNama:'Sukun',     jawaban:'m (mati)', salah:['ma','mi','man'], level:2 },
+  ];
+
+  t1data.forEach(d => {
+    const arabDisplay = d.h + d.baris;
+    pool.push({
+      id: `t1-${d.h}-${d.baris}`,
+      tipe: 'harakat_bunyi',
+      level: d.level,
+      poin: d.level === 1 ? 10 : 15,
+      arab: arabDisplay,
+      arabDesc: `${d.hNama} + ${d.barisNama}`,
+      soal: `Jika huruf <em>${d.hNama} (${d.h})</em> bertemu baris <em>${d.barisNama}</em>, maka dibaca...`,
+      jawaban: d.jawaban,
+      opsi: shuffle([
+        { txt: d.jawaban, benar: true },
+        ...d.salah.map(s => ({ txt: s, benar: false }))
+      ]),
+      rumus: `${d.h} + ${d.baris} (${d.barisNama}) = "${d.jawaban}"`,
+      penjelasan: `Huruf ${d.hNama} berharakat ${d.barisNama} → dibaca "${d.jawaban}"`,
+    });
+  });
+
+  // TIPE 2: Bunyi itu baris apa?
+  const t2data = [
+    { arab:'بَ', arabDesc:'Ba+Fathah', bunyi:'ba',  baris:'Fathah',    salah:['Kasrah','Dammah','Sukun'], level:1 },
+    { arab:'بِ', arabDesc:'Ba+Kasrah', bunyi:'bi',  baris:'Kasrah',    salah:['Fathah','Dammah','Sukun'], level:1 },
+    { arab:'بُ', arabDesc:'Ba+Dammah', bunyi:'bu',  baris:'Dammah',    salah:['Fathah','Kasrah','Sukun'], level:1 },
+    { arab:'بً', arabDesc:'Ba+Fathatain', bunyi:'ban', baris:'Fathatain', salah:['Kasratain','Dammatain','Sukun'], level:1 },
+    { arab:'بٍ', arabDesc:'Ba+Kasratain', bunyi:'bin', baris:'Kasratain', salah:['Fathatain','Dammatain','Fathah'], level:1 },
+    { arab:'بٌ', arabDesc:'Ba+Dammatain', bunyi:'bun', baris:'Dammatain', salah:['Fathatain','Kasratain','Dammah'], level:1 },
+    { arab:'بْ', arabDesc:'Ba+Sukun',  bunyi:'b (mati)', baris:'Sukun', salah:['Fathah','Kasrah','Syaddah'], level:2 },
+    { arab:'بّ', arabDesc:'Ba+Syaddah', bunyi:'bb (dobel)', baris:'Syaddah', salah:['Fathah','Sukun','Dammah'], level:2 },
+  ];
+
+  t2data.forEach((d, i) => {
+    pool.push({
+      id: `t2-${i}`,
+      tipe: 'bunyi_baris',
+      level: d.level,
+      poin: 10,
+      arab: d.arab,
+      arabDesc: d.arabDesc,
+      soal: `Huruf <em>${d.arab}</em> dibaca "<em>${d.bunyi}</em>" — baris apakah itu?`,
+      jawaban: d.baris,
+      opsi: shuffle([
+        { txt: d.baris, benar: true },
+        ...d.salah.map(s => ({ txt: s, benar: false }))
+      ]),
+      rumus: `"${d.bunyi}" = baris ${d.baris}`,
+      penjelasan: `"${d.bunyi}" adalah bunyi dari harakat ${d.baris}`,
+    });
+  });
+
+  // TIPE 3: Lengkapi bacaan (fill in blank)
+  const t3data = [
+    { arab:'نً', arabDesc:'Nun+Fathatain', soal:'نً dibaca "na..."', jawaban:'nan', salah:['na','nin','nun'], level:1, rumus:'Nun + Fathatain = nan' },
+    { arab:'مٌ', arabDesc:'Mim+Dammatain', soal:'مٌ dibaca "mu..."', jawaban:'mun', salah:['ma','man','min'], level:1, rumus:'Mim + Dammatain = mun' },
+    { arab:'لٍ', arabDesc:'Lam+Kasratain', soal:'لٍ dibaca "li..."', jawaban:'lin', salah:['la','lan','lun'], level:1, rumus:'Lam + Kasratain = lin' },
+    { arab:'رَ', arabDesc:'Ra+Fathah',     soal:'رَ dibaca "r..."',  jawaban:'ra',  salah:['ri','ru','ran'],  level:1, rumus:'Ra + Fathah = ra' },
+    { arab:'سِ', arabDesc:'Sin+Kasrah',    soal:'سِ dibaca "s..."',  jawaban:'si',  salah:['sa','su','sin'],  level:1, rumus:'Sin + Kasrah = si' },
+    { arab:'فُ', arabDesc:'Fa+Dammah',     soal:'فُ dibaca "f..."',  jawaban:'fu',  salah:['fa','fi','fun'],  level:1, rumus:'Fa + Dammah = fu' },
+    { arab:'قْ', arabDesc:'Qof+Sukun',     soal:'قْ dibaca "q..."',  jawaban:'q (mati)', salah:['qa','qi','qan'], level:2, rumus:'Qof + Sukun = q (mati)' },
+    { arab:'كّ', arabDesc:'Kaf+Syaddah',   soal:'كّ dibaca "k..."',  jawaban:'kk (dobel)', salah:['ka','ki','kan'], level:3, rumus:'Kaf + Syaddah = kk (dobel/tekan)' },
+    { arab:'عَ', arabDesc:'Ain+Fathah',    soal:'عَ dibaca "a..."',  jawaban:"'a", salah:['a','ai','an'],     level:2, rumus:"Ain + Fathah = 'a" },
+    { arab:'غُ', arabDesc:'Ghain+Dammah',  soal:'غُ dibaca "gh..."', jawaban:'ghu', salah:['gha','ghi','ghan'], level:2, rumus:'Ghain + Dammah = ghu' },
+  ];
+
+  t3data.forEach((d, i) => {
+    pool.push({
+      id: `t3-${i}`,
+      tipe: 'lengkapi',
+      level: d.level,
+      poin: d.level * 10,
+      arab: d.arab,
+      arabDesc: d.arabDesc,
+      soal: d.soal + ' <em>???</em>',
+      jawaban: d.jawaban,
+      opsi: shuffle([
+        { txt: d.jawaban, benar: true },
+        ...d.salah.map(s => ({ txt: s, benar: false }))
+      ]),
+      rumus: d.rumus,
+      penjelasan: d.rumus,
+    });
+  });
+
+  // TIPE 4: Pilih huruf + baris yang menghasilkan bunyi X
+  const t4data = [
+    { bunyi:'tan', jawab:'تً', jawabDesc:'Ta+Fathatain', salah:['تَ','تِ','تُ'], salahDesc:['Ta+Fathah','Ta+Kasrah','Ta+Dammah'], level:2 },
+    { bunyi:'min', jawab:'مٍ', jawabDesc:'Mim+Kasratain', salah:['مَ','مِ','مٌ'], salahDesc:['Mim+Fathah','Mim+Kasrah','Mim+Dammatain'], level:2 },
+    { bunyi:'nun', jawab:'نٌ', jawabDesc:'Nun+Dammatain', salah:['نَ','نِ','نً'], salahDesc:['Nun+Fathah','Nun+Kasrah','Nun+Fathatain'], level:2 },
+    { bunyi:'rin', jawab:'رٍ', jawabDesc:'Ra+Kasratain',  salah:['رَ','رِ','رُ'], salahDesc:['Ra+Fathah','Ra+Kasrah','Ra+Dammah'],   level:2 },
+    { bunyi:'lis', jawab:'لِ', jawabDesc:'Lam+Kasrah',    salah:['لَ','لُ','لٌ'], salahDesc:['Lam+Fathah','Lam+Dammah','Lam+Dammatain'], level:2 },
+    { bunyi:'kan', jawab:'كً', jawabDesc:'Kaf+Fathatain', salah:['كَ','كُ','كٌ'], salahDesc:['Kaf+Fathah','Kaf+Dammah','Kaf+Dammatain'], level:3 },
+    { bunyi:'fun', jawab:'فٌ', jawabDesc:'Fa+Dammatain',  salah:['فَ','فِ','فً'], salahDesc:['Fa+Fathah','Fa+Kasrah','Fa+Fathatain'], level:3 },
+    { bunyi:'sin', jawab:'سٍ', jawabDesc:'Sin+Kasratain', salah:['سَ','سِ','سٌ'], salahDesc:['Sin+Fathah','Sin+Kasrah','Sin+Dammatain'], level:3 },
+  ];
+
+  t4data.forEach((d, i) => {
+    const opts = shuffle([
+      { arab: d.jawab, desc: d.jawabDesc, benar: true },
+      ...d.salah.map((s, j) => ({ arab: s, desc: d.salahDesc[j], benar: false })),
+    ]);
+    pool.push({
+      id: `t4-${i}`,
+      tipe: 'pilih_huruf',
+      level: d.level,
+      poin: d.level * 10,
+      arab: `"${d.bunyi}"`,
+      arabDesc: 'Bunyi yang dicari',
+      soal: `Huruf dan baris mana yang menghasilkan bunyi <em>"${d.bunyi}"</em>?`,
+      jawaban: d.jawabDesc,
+      opsi: opts.map(o => ({
+        txt: o.desc,
+        arab: o.arab,
+        benar: o.benar,
+      })),
+      rumus: `${d.jawab} (${d.jawabDesc}) → "${d.bunyi}"`,
+      penjelasan: `Yang menghasilkan "${d.bunyi}" adalah ${d.jawab} yaitu ${d.jawabDesc}`,
+    });
+  });
+
+  // TIPE 5: Logika IF-THEN — jika baris ini, MAKA?
+  const t5data = [
+    {
+      kondisi: 'بً berjumpa akhir kalimat',
+      maka: 'dibaca "ban" (tanwin fathah)',
+      salah: ['dibaca "ba"', 'dibaca "bun"', 'dibaca "b" (mati)'],
+      arab: 'بً', arabDesc: 'Ba + Fathatain',
+      rumus: 'Tanwin Fathah di akhir kalimat = dibaca "an" → "ban"',
+      level: 2,
+    },
+    {
+      kondisi: 'بٌ berjumpa akhir kalimat',
+      maka: 'dibaca "bun" (tanwin dammah)',
+      salah: ['dibaca "bu"', 'dibaca "ban"', 'dibaca "bin"'],
+      arab: 'بٌ', arabDesc: 'Ba + Dammatain',
+      rumus: 'Tanwin Dammah di akhir kalimat = dibaca "un" → "bun"',
+      level: 2,
+    },
+    {
+      kondisi: 'بٍ berjumpa akhir kalimat',
+      maka: 'dibaca "bin" (tanwin kasrah)',
+      salah: ['dibaca "bi"', 'dibaca "ban"', 'dibaca "bun"'],
+      arab: 'بٍ', arabDesc: 'Ba + Kasratain',
+      rumus: 'Tanwin Kasrah di akhir kalimat = dibaca "in" → "bin"',
+      level: 2,
+    },
+    {
+      kondisi: 'Huruf berharakat Sukun بْ',
+      maka: 'huruf dibaca mati (tanpa vokal)',
+      salah: ['dibaca "ba"', 'dibaca "bi"', 'dibaca "bu"'],
+      arab: 'بْ', arabDesc: 'Ba + Sukun',
+      rumus: 'Sukun = tidak ada vokal → mati',
+      level: 2,
+    },
+    {
+      kondisi: 'Huruf berharakat Syaddah بّ',
+      maka: 'huruf dibaca dobel/ditekan',
+      salah: ['dibaca satu kali', 'dibaca mati', 'dibaca panjang'],
+      arab: 'بّ', arabDesc: 'Ba + Syaddah',
+      rumus: 'Syaddah = huruf bertasydid → dobel (tekan)',
+      level: 3,
+    },
+    {
+      kondisi: 'Nun mati (نْ) bertemu Ba (ب)',
+      maka: 'dibaca Iqlab → nun berubah jadi mim',
+      salah: ['dibaca Idgham', 'dibaca Idzhar', 'dibaca Ikhfa'],
+      arab: 'نْ + ب', arabDesc: 'Nun Mati + Ba',
+      rumus: 'Nun Mati/Tanwin + Ba = IQLAB (nun → mim)',
+      level: 3,
+    },
+    {
+      kondisi: 'Nun mati (نْ) bertemu ي ن م و',
+      maka: 'dibaca Idgham Bighunnah (masuk berdengung)',
+      salah: ['dibaca Iqlab', 'dibaca Idzhar', 'dibaca Ikhfa'],
+      arab: 'نْ + ي', arabDesc: 'Nun Mati + Ya',
+      rumus: 'Nun Mati + (ي ن م و) = IDGHAM BIGHUNNAH',
+      level: 3,
+    },
+    {
+      kondisi: 'Nun mati (نْ) bertemu ح خ ع غ ه أ',
+      maka: 'dibaca Idzhar Halqi (jelas, tidak berdengung)',
+      salah: ['dibaca Idgham', 'dibaca Iqlab', 'dibaca Ikhfa'],
+      arab: 'نْ + ه', arabDesc: 'Nun Mati + Ha',
+      rumus: 'Nun Mati + huruf halqi = IDZHAR HALQI',
+      level: 4,
+    },
+    {
+      kondisi: 'Mim mati (مْ) bertemu Ba (ب)',
+      maka: 'dibaca Ikhfa Syafawi (berdengung)',
+      salah: ['dibaca Idgham Mitslain', 'dibaca Idzhar Syafawi', 'dibaca Iqlab'],
+      arab: 'مْ + ب', arabDesc: 'Mim Mati + Ba',
+      rumus: 'Mim Mati + Ba = IKHFA SYAFAWI',
+      level: 4,
+    },
+    {
+      kondisi: 'Mim mati (مْ) bertemu Mim (م)',
+      maka: 'dibaca Idgham Mitslain (masuk ke mim)',
+      salah: ['dibaca Ikhfa Syafawi', 'dibaca Idzhar', 'dibaca Iqlab'],
+      arab: 'مْ + م', arabDesc: 'Mim Mati + Mim',
+      rumus: 'Mim Mati + Mim = IDGHAM MITSLAIN (masuk/lebur)',
+      level: 4,
+    },
+  ];
+
+  t5data.forEach((d, i) => {
+    pool.push({
+      id: `t5-${i}`,
+      tipe: 'ifthen',
+      level: d.level,
+      poin: d.level * 10,
+      arab: d.arab,
+      arabDesc: d.arabDesc,
+      soal: `Jika <em>${d.kondisi}</em>, maka...`,
+      jawaban: d.maka,
+      opsi: shuffle([
+        { txt: d.maka, benar: true },
+        ...d.salah.map(s => ({ txt: s, benar: false })),
+      ]),
+      rumus: d.rumus,
+      penjelasan: d.rumus,
+    });
+  });
+
+  return pool;
+}
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let ALL_SOAL = [];
+let state = {
+  level: 1,      // 1=dasar 2=menengah 3=lanjut 4=master
+  score: 0,
+  lives: 3,
+  streak: 0,
+  maxStreak: 0,
+  correctCount: 0,
+  wrongCount: 0,
+  qIdx: 0,
+  pool: [],
+  answered: false,
+};
+
+function setLevel(lv) {
+  state.level = lv;
+  [1,2,3,4].forEach(i => {
+    const tab = document.getElementById(`tab-${i}`);
+    tab.className = `ltab${i === lv ? ` active-lv${lv}` : ''}`;
+  });
+  startGame();
+}
+
+function startGame() {
+  ALL_SOAL = buildAllSoal();
+  // Filter by level (level N includes levels <= N)
+  let pool = ALL_SOAL.filter(s => s.level <= state.level);
+  pool = shuffle(pool).slice(0, 30);
+  state.score = 0;
+  state.lives = 3;
+  state.streak = 0;
+  state.maxStreak = 0;
+  state.correctCount = 0;
+  state.wrongCount = 0;
+  state.qIdx = 0;
+  state.pool = pool;
+  state.answered = false;
+  updateTopbar();
+  renderQ();
+}
+
+// ═══════════════════════════════════════════════
+// RENDER QUESTION
+// ═══════════════════════════════════════════════
+function renderQ() {
+  if (state.qIdx >= state.pool.length) { renderGameOver(); return; }
+  const q = state.pool[state.qIdx];
+  state.answered = false;
+
+  // Progress
+  document.getElementById('prog').style.width =
+    ((state.qIdx / state.pool.length) * 100) + '%';
+
+  const isArabBig = q.arab.length <= 3;
+  const arabClass = isArabBig ? 'arabic-char big' : 'arabic-char med';
+
+  // Build options HTML
+  let optsHTML = q.opsi.map((o, i) => {
+    const arabPart = o.arab ? `<span class="opt-arabic">${o.arab}</span>` : '';
+    return `
+      <button class="opt-btn" id="opt-${i}" onclick="doAnswer(${i})">
+        ${arabPart}
+        <div class="opt-info">
+          <div class="opt-main">${o.txt}</div>
+          ${o.desc ? `<div class="opt-sub">${o.desc}</div>` : ''}
+        </div>
+      </button>`;
+  }).join('');
+
+  // Badge level
+  const lvColors = ['','v-teal','v-blue','v-gold','v-red'];
+  const lvLabels = ['','⭐ Dasar','⚡ Menengah','🔥 Lanjut','💎 Master'];
+
+  document.getElementById('game-inner').innerHTML = `
+    <div class="q-badge">
+      <span class="dot"></span>
+      Soal ${state.qIdx + 1} / ${state.pool.length}
+      &nbsp;·&nbsp; <span class="${lvColors[q.level]}">${lvLabels[q.level]}</span>
+      &nbsp;·&nbsp; +${q.poin} poin
+    </div>
+
+    <div class="logic-box">
+      <div class="ifthen">
+        <div class="ifthen-part">
+          <span class="if-tag">HURUF</span>
+          <span class="${arabClass}">${q.arab}</span>
+          <span class="char-label">${q.arabDesc}</span>
+        </div>
+        <div class="arrow-sym">→</div>
+        <div class="ifthen-part">
+          <span class="q-tag">DIBACA?</span>
+          <span class="blank-answer">???</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="q-text">${q.soal}</div>
+
+    <div class="opts-grid">${optsHTML}</div>
+
+    <div class="feedback-box" id="fb"></div>
+    <button class="next-btn" id="nxt" onclick="nextQ()">
+      ${state.qIdx + 1 >= state.pool.length ? '🏆 Lihat Hasil →' : 'Soal Berikutnya →'}
+    </button>
+  `;
+}
+
+// ═══════════════════════════════════════════════
+// ANSWER LOGIC
+// ═══════════════════════════════════════════════
+function doAnswer(idx) {
+  if (state.answered) return;
+  state.answered = true;
+
+  const q = state.pool[state.qIdx];
+  const chosen = q.opsi[idx];
+
+  // Highlight all buttons
+  q.opsi.forEach((o, i) => {
+    const btn = document.getElementById(`opt-${i}`);
+    btn.disabled = true;
+    if (o.benar) btn.classList.add(i === idx ? 'correct' : 'show-correct');
+    else if (i === idx) btn.classList.add('wrong');
+  });
+
+  const fb = document.getElementById('fb');
+
+  if (chosen.benar) {
+    state.streak++;
+    state.correctCount++;
+    if (state.streak > state.maxStreak) state.maxStreak = state.streak;
+    const bonus = state.streak >= 5 ? 2 : state.streak >= 3 ? 1.5 : 1;
+    const poin = Math.round(q.poin * bonus);
+    state.score += poin;
+
+    let fbText = `✅ Benar! +${poin} poin`;
+    if (state.streak >= 3) {
+      fbText += ` 🔥 Streak ${state.streak}x!`;
+      showComboToast(`🔥 COMBO x${state.streak}!`);
+    }
+    fb.className = 'feedback-box correct';
+    fb.innerHTML = `
+      ${fbText}
+      <div class="rumus-box">📐 Rumus: ${q.rumus}</div>
+    `;
+  } else {
+    state.streak = 0;
+    state.wrongCount++;
+    state.lives = Math.max(0, state.lives - 1);
+    fb.className = 'feedback-box wrong';
+    fb.innerHTML = `
+      ❌ Salah! Jawaban yang benar: <strong>${q.jawaban}</strong>
+      <div class="rumus-box">📐 ${q.penjelasan}</div>
+    `;
+  }
+
+  updateTopbar();
+  document.getElementById('nxt').style.display = 'block';
+}
+
+function nextQ() {
+  state.qIdx++;
+  if (state.lives <= 0) { renderGameOver(); return; }
+  renderQ();
+  updateTopbar();
+}
+
+// ═══════════════════════════════════════════════
+// GAME OVER
+// ═══════════════════════════════════════════════
+function renderGameOver() {
+  document.getElementById('prog').style.width = '100%';
+  const total = state.correctCount + state.wrongCount;
+  const pct = total ? Math.round((state.correctCount / total) * 100) : 0;
+
+  let emoji, msg;
+  if (pct >= 90) { emoji = '🏆'; msg = 'Luar biasa! Kamu Ahli Baris Arab!'; }
+  else if (pct >= 75) { emoji = '🌟'; msg = 'Hebat! Hampir sempurna!'; }
+  else if (pct >= 60) { emoji = '⭐'; msg = 'Bagus! Terus semangat belajar!'; }
+  else if (pct >= 40) { emoji = '📚'; msg = 'Lumayan, masih perlu latihan!'; }
+  else { emoji = '💪'; msg = 'Ayo ulangi lagi, kamu pasti bisa!'; }
+
+  document.getElementById('game-inner').innerHTML = `
+    <div class="gameover-panel">
+      <div class="go-emoji">${emoji}</div>
+      <div class="go-title">Selesai!</div>
+      <div class="go-score">${state.score}</div>
+      <div class="go-sub">Total Poin • Akurasi: ${pct}%</div>
+      <div class="go-msg">${msg}</div>
+      <div class="go-stats">
+        <div class="go-stat">
+          <div class="go-stat-val" style="color:var(--teal)">${state.correctCount}</div>
+          <div class="go-stat-lbl">✅ Benar</div>
+        </div>
+        <div class="go-stat">
+          <div class="go-stat-val" style="color:var(--red)">${state.wrongCount}</div>
+          <div class="go-stat-lbl">❌ Salah</div>
+        </div>
+        <div class="go-stat">
+          <div class="go-stat-val" style="color:var(--gold)">${state.maxStreak}</div>
+          <div class="go-stat-lbl">🔥 Max Streak</div>
+        </div>
+      </div>
+      <div>
+        <button class="btn-restart" onclick="startGame()">🔄 Main Lagi</button>
+        <button class="btn-secondary" onclick="setLevel(${Math.min(state.level+1,4)})">
+          ${state.level < 4 ? '⬆️ Level Lebih Sulit' : '🏆 Level Max!'}
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════
+// UI UPDATES
+// ═══════════════════════════════════════════════
+function updateTopbar() {
+  document.getElementById('s-score').textContent = state.score;
+  document.getElementById('s-qnum').textContent = `${state.qIdx + 1}/${state.pool.length}`;
+  document.getElementById('s-streak').textContent = `🔥 ${state.streak}`;
+
+  // Hearts
+  let hhtml = '';
+  for (let i = 0; i < 3; i++) {
+    hhtml += `<span class="hrt${i >= state.lives ? ' dead' : ''}">❤️</span>`;
+  }
+  document.getElementById('s-lives').innerHTML = hhtml;
+}
+
+function showComboToast(txt) {
+  const el = document.createElement('div');
+  el.className = 'combo-toast';
+  el.textContent = txt;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 900);
+}
+
+// ═══════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ═══════════════════════════════════════════════
+// START
+// ═══════════════════════════════════════════════
+startGame();
+</script>
+</body>
+</html>
